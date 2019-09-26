@@ -14,17 +14,6 @@ export class AuthService {
     return await this.afAuth.auth.signInWithPopup(provider)
   }
 
-  async doRegister(value: { email: string; password: string }) {
-    return await auth().createUserWithEmailAndPassword(
-      value.email,
-      value.password
-    )
-  }
-
-  async doLogin(value: { email: string; password: string }) {
-    return await auth().signInWithEmailAndPassword(value.email, value.password)
-  }
-
   async doLogout() {
     if (auth().currentUser) {
       return await this.afAuth.auth.signOut()
