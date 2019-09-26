@@ -15,9 +15,9 @@ export class AuthGuard implements CanActivate {
     try {
       await this.userService.getCurrentUser()
       this.router.navigate(['/user'])
-      return true
-    } catch (error) {
       return false
+    } catch (error) {
+      return true
     }
   }
 }

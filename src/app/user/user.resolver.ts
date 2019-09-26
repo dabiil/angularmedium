@@ -15,6 +15,7 @@ export class UserResolver implements Resolve<FirebaseUserModel> {
         displayName,
         providerData,
         photoURL,
+        uid,
       } = await this.userService.getCurrentUser()
       const { providerId } = providerData[0]
 
@@ -24,6 +25,7 @@ export class UserResolver implements Resolve<FirebaseUserModel> {
           : photoURL
       userModel.name = displayName
       userModel.provider = providerId
+      userModel.id = uid
       return userModel
     } catch (error) {
       this.router.navigate(['/login'])

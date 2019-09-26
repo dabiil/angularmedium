@@ -12,7 +12,7 @@ import { FirebaseUserModel } from '../core/user.model'
   styleUrls: ['user.scss'],
 })
 export class UserComponent implements OnInit {
-  user: FirebaseUserModel = new FirebaseUserModel()
+  user = new FirebaseUserModel()
   profileForm: FormGroup
 
   constructor(
@@ -25,8 +25,9 @@ export class UserComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe((routeData) => {
-      const data = routeData.data
+      const { data } = routeData
       if (data) {
+        console.log(data)
         this.user = data
         this.profileForm = this.fb.group({
           name: [this.user.name, Validators.required],
