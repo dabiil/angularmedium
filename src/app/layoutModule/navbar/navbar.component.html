@@ -1,0 +1,28 @@
+<nav class="navbar navbar-dark bg-dark justify-content-between">
+  <a class="navbar-brand" [routerLink]="['/']">
+    <img
+      src="assets/img/angular.svg"
+      width="30"
+      height="30"
+      alt=""
+      class="d-inline-block align-top"
+    />
+    Medium
+  </a>
+  <button
+    *ngIf="currentUser == null"
+    class="btn btn-outline-light my-2 my-sm-0"
+    type="button"
+    (click)="logIn()"
+  >
+    Sign In
+  </button>
+  <button
+    *ngIf="currentUser != null"
+    class="btn btn-outline-light my-2 my-sm-0"
+    type="button"
+    (click)="logOut()"
+  >
+    Log Out
+  </button>
+</nav>

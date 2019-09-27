@@ -1,17 +1,31 @@
 import { Injectable } from '@angular/core'
-import 'rxjs/add/operator/toPromise'
 import { AngularFireAuth } from '@angular/fire/auth'
-import { auth } from 'firebase/app'
+import { auth, firestore } from 'firebase/app'
 
 @Injectable()
 export class AuthService {
   constructor(public afAuth: AngularFireAuth) {}
 
   async doGoogleLogin() {
-    const provider = new auth.GoogleAuthProvider()
-    provider.addScope('profile')
-    provider.addScope('email')
-    return await this.afAuth.auth.signInWithPopup(provider)
+    try {
+      const provider = new auth.GoogleAuthProvider()
+      provider.addScope('profile')
+      provider.addScope('email')
+      const user = await this.afAuth.auth.signInWithPopup(provider)
+
+      if (user.additionalUserInfo.isNewUser) {
+        await firestore()
+          .collection('users')
+          .add({
+            id: user.user.uid,
+            name: user.user.displayName,
+            image: user.user.photoURL,
+          })
+      }
+      return user
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async doLogout() {

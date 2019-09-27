@@ -1,0 +1,13 @@
+<h1 class="header">Users</h1>
+<div class="row">
+  <div class="list-group">
+    <ng-container *ngFor="let userItem of users">
+      <a
+        [routerLink]="[userItem.id]"
+        class="list-group-item list-group-item-action"
+      >
+        {{ userItem.name }}
+      </a>
+    </ng-container>
+  </div>
+</div>

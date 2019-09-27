@@ -8,22 +8,17 @@ import { AngularFirestoreModule } from '@angular/fire/firestore'
 import { environment } from '../environments/environment'
 import { LoginComponent } from './login/login.component'
 import { UserComponent } from './user/user.component'
-import { RegisterComponent } from './register/register.component'
+
 import { UserResolver } from './user/user.resolver'
-import { AuthGuard } from './core/auth.guard'
-import { AuthService } from './core/auth.service'
-import { UserService } from './core/user.service'
+import { AuthGuard, AuthService, UserService } from './core'
 import { ReactiveFormsModule } from '@angular/forms'
 
 import { AppComponent } from './app.component'
+import { UsersModule } from './userModule/users.module'
+import { LayoutModule } from './layoutModule/layout.module'
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    UserComponent,
-    RegisterComponent,
-  ],
+  declarations: [AppComponent, LoginComponent, UserComponent],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -31,6 +26,8 @@ import { AppComponent } from './app.component'
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
+    UsersModule,
+    LayoutModule,
   ],
   providers: [AuthService, UserService, UserResolver, AuthGuard],
   bootstrap: [AppComponent],
