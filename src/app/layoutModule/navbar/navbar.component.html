@@ -9,20 +9,30 @@
     />
     Medium
   </a>
-  <button
-    *ngIf="currentUser == null"
-    class="btn btn-outline-light my-2 my-sm-0"
-    type="button"
-    (click)="logIn()"
-  >
-    Sign In
-  </button>
-  <button
-    *ngIf="currentUser != null"
-    class="btn btn-outline-light my-2 my-sm-0"
-    type="button"
-    (click)="logOut()"
-  >
-    Log Out
-  </button>
+  <div class="navVontainer">
+    <button
+      *ngIf="currentUser == null"
+      class="btn btn-outline-light my-2 my-sm-0"
+      type="button"
+      (click)="logIn()"
+    >
+      Sign In
+    </button>
+    <ng-container *ngIf="currentUser != null">
+      <button
+        class="btn btn-outline-light my-2 my-sm-0"
+        type="button"
+        (click)="logOut()"
+      >
+        Log Out
+      </button>
+      <a [routerLink]="['/users/me']" class="userImage">
+        <img
+          [src]="currentUser.image"
+          [alt]="currentUser.name"
+          class="rounded-circle"
+        />
+      </a>
+    </ng-container>
+  </div>
 </nav>

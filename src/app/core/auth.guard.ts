@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router'
 import { AngularFireAuth } from '@angular/fire/auth'
-import { UserService } from '../core/user.service'
+import { UserService } from '.'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,9 +13,11 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(): Promise<boolean> {
     try {
-      await this.userService.getCurrentUser()
-      this.router.navigate(['/users'])
-      return false
+      if (this.userService.forceGetCurrentUser()) {
+        this.router.navigate(['/'])
+        return false
+      }
+      return true
     } catch (error) {
       return true
     }

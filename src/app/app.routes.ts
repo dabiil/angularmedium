@@ -1,17 +1,18 @@
 import { Routes } from '@angular/router'
 
 import { LoginComponent } from './login/login.component'
-import { UserComponent } from './user/user.component'
-
-import { UserResolver } from './user/user.resolver'
 import { AuthGuard } from './core/auth.guard'
 
 export const rootRouterConfig: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: '/users', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },
   {
     path: 'users',
     loadChildren: () =>
-      import('./userModule/users.module').then((m) => m.UsersModule),
+      import('./userModule/user.module').then((m) => m.UserModule),
+  },
+  {
+    path: '**',
+    redirectTo: '/',
   },
 ]

@@ -7,25 +7,24 @@ export class AuthService {
   constructor(public afAuth: AngularFireAuth) {}
 
   async doGoogleLogin() {
-    try {
-      const provider = new auth.GoogleAuthProvider()
-      provider.addScope('profile')
-      provider.addScope('email')
-      const user = await this.afAuth.auth.signInWithPopup(provider)
+    const provider = new auth.GoogleAuthProvider()
+    provider.addScope('profile')
+    provider.addScope('email')
+    const user = await this.afAuth.auth.signInWithPopup(provider)
+    const {
+      user: { displayName, photoURL, uid },
+    } = user
 
-      if (user.additionalUserInfo.isNewUser) {
-        await firestore()
-          .collection('users')
-          .add({
-            id: user.user.uid,
-            name: user.user.displayName,
-            image: user.user.photoURL,
-          })
-      }
-      return user
-    } catch (error) {
-      console.log(error)
+    if (user.additionalUserInfo.isNewUser) {
+      await firestore()
+        .collection('users')
+        .add({
+          id: uid,
+          name: displayName,
+          image: photoURL,
+        })
     }
+    return user
   }
 
   async doLogout() {

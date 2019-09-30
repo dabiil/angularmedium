@@ -1,0 +1,26 @@
+<h1 class="header">Users</h1>
+<div class="row">
+  <div class="list-group w-100">
+    <ng-container *ngFor="let userItem of users">
+      <a
+        [routerLink]="['users', userItem.id]"
+        class="list-group-item list-group-item-action col-md-6 col-sm-12"
+      >
+        <div class="row">
+          <div class="col-12 col-sm-3 imageContainer">
+            <img
+              [src]="userItem.image"
+              [alt]="userItem.name"
+              class="rounded-circle image"
+            />
+          </div>
+          <div class="col-sm-9 col-12">
+            <div class="d-flex justify-content-center align-items-center h-100">
+              {{ userItem.name }}
+            </div>
+          </div>
+        </div>
+      </a>
+    </ng-container>
+  </div>
+</div>

@@ -4,17 +4,33 @@ import { AngularFirestore } from '@angular/fire/firestore'
 import { AngularFireAuth } from '@angular/fire/auth'
 import { auth, User, firestore } from 'firebase/app'
 import { GetUsersConfig } from '../core'
+import { FBUser } from './types'
+import { BehaviorSubject } from 'rxjs'
 
 @Injectable()
 export class UserService {
-  constructor(public db: AngularFirestore, public afAuth: AngularFireAuth) {}
+  private currentUserBehaviour = new BehaviorSubject<FBUser>(null)
+  currentUserObserver = this.currentUserBehaviour.asObservable()
 
-  getCurrentUser() {
-    return new Promise<User>((resolve, reject) => {
-      auth().onAuthStateChanged((user) => {
-        user ? resolve(user) : reject('No user logged in')
-      })
+  constructor(public db: AngularFirestore, public afAuth: AngularFireAuth) {
+    this.afAuth.user.subscribe((userData) => {
+      if (userData) {
+        const { displayName, providerData, photoURL, uid } = userData
+
+        this.currentUserBehaviour.next({
+          image: photoURL,
+          name: displayName,
+          id: uid,
+          provider: providerData[0].providerId,
+        })
+        return
+      }
+      this.currentUserBehaviour.next(null)
     })
+  }
+
+  forceGetCurrentUser() {
+    return this.currentUserBehaviour.value
   }
 
   async updateCurrentUser(value: { name: string }) {
@@ -23,14 +39,10 @@ export class UserService {
     })
   }
 
-  private getUserQuery() {
-    return firestore()
+  async getUsers({ skip, take }: GetUsersConfig) {
+    return await firestore()
       .collection('users')
       .orderBy('id')
-  }
-
-  async getUsers({ skip, take }: GetUsersConfig) {
-    return await this.getUserQuery()
       .startAt(skip)
       .limit(take)
       .get()

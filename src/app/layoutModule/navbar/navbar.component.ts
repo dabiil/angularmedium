@@ -1,42 +1,41 @@
 import { Component, OnInit } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
-import { UserService, AuthService, FirebaseUserModel } from '../../core'
+import { ActivatedRoute, Router } from '@angular/router'
+import { UserService, AuthService, FBUser } from '../../core'
 
 @Component({
   selector: 'app-navbar',
   templateUrl: 'navbar.component.html',
-  styleUrls: [],
+  styleUrls: ['navbar.scss'],
 })
 export class NavbarComponent implements OnInit {
-  currentUser: FirebaseUserModel
-
+  currentUser: FBUser
   constructor(
     public userService: UserService,
     public authService: AuthService,
-    private route: ActivatedRoute
+    private router: Router
   ) {}
 
   async ngOnInit() {
-    this.authService.afAuth.user.subscribe((user) => {
-      console.log(user)
-      if (user) {
-        const userModel = new FirebaseUserModel()
-        const { displayName, photoURL, uid } = user
-        userModel.name = displayName
-        userModel.id = uid
-        userModel.image = photoURL
-        this.currentUser = userModel
-        return
-      }
-      this.currentUser = null
+    this.userService.currentUserObserver.subscribe((user) => {
+      this.currentUser = user
     })
   }
 
   async logIn() {
-    await this.authService.doGoogleLogin()
+    try {
+      await this.authService.doGoogleLogin()
+      this.router.navigate(['/'])
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async logOut() {
-    await this.authService.doLogout()
+    try {
+      await this.authService.doLogout()
+      this.router.navigate(['/'])
+    } catch (error) {
+      console.log(error)
+    }
   }
 }

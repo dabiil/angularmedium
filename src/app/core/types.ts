@@ -9,3 +9,10 @@ export interface FSUser {
   id: string
   image: string
 }
+
+export interface FBUser {
+  image: string
+  name: string
+  provider: string
+  id: string
+}

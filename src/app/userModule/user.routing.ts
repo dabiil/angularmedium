@@ -2,21 +2,22 @@ import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { AuthGuard } from '../core'
 import { UsersComponent, UsersResolver } from './users'
-import { UserResolver } from '../user/user.resolver'
+import { UserComponent } from './user'
 // default path /users
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     component: UsersComponent,
     resolve: {
       users: UsersResolver,
-      user: UserResolver,
     },
   },
+  {
+    path: ':userId',
+    component: UserComponent,
+  },
+  {
+    path: 'me',
+    component: UserComponent,
+  },
 ]
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-})
-export class UsersRoutingModule {}
