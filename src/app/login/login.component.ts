@@ -16,7 +16,6 @@ export class LoginComponent {
     try {
       await this.authService.doGoogleLogin()
       this.errorMessage = ''
-      this.router.navigate(['/user'])
     } catch (error) {
       this.errorMessage = 'Something was wrong'
     }

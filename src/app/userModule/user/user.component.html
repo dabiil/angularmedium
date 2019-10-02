@@ -1,7 +1,8 @@
-<h1 class="header">Users</h1>
+<h1 class="header">User</h1>
 <div class="row">
   <div class="list-group w-100">
-    <ng-container *ngFor="let userItem of users">
+    {{ userId }}
+    <!-- <ng-container *ngIf="currentUser">
       <a
         [routerLink]="['users', userItem.id]"
         class="list-group-item list-group-item-action col-md-6 col-sm-12"
@@ -21,6 +22,6 @@
           </div>
         </div>
       </a>
-    </ng-container>
+    </ng-container> -->
   </div>
 </div>

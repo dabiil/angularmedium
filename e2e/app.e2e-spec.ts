@@ -1,14 +1,14 @@
-import { AppPage } from './app.po';
+import { FirebaseAuthenticationWithAngular5Page } from './app.po';
 
-describe('angular-firebase App', () => {
-  let page: AppPage;
+describe('firebase-authentication-with-angular-5 App', function() {
+  let page: FirebaseAuthenticationWithAngular5Page;
 
   beforeEach(() => {
-    page = new AppPage();
+    page = new FirebaseAuthenticationWithAngular5Page();
   });
 
-  it('should display welcome message', () => {
+  it('should display message saying app works', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!');
+    expect(page.getParagraphText()).toEqual('app works!');
   });
 });

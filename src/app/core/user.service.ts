@@ -1,23 +1,25 @@
 import { Injectable } from '@angular/core'
-import 'rxjs/add/operator/toPromise'
 import { AngularFirestore } from '@angular/fire/firestore'
 import { AngularFireAuth } from '@angular/fire/auth'
 import { auth, User, firestore } from 'firebase/app'
 import { GetUsersConfig } from '../core'
-import { FBUser } from './types'
-import { BehaviorSubject } from 'rxjs'
+import { FBUser, FSUser } from './types'
+import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable()
 export class UserService {
-  private currentUserBehaviour = new BehaviorSubject<FBUser>(null)
-  currentUserObserver = this.currentUserBehaviour.asObservable()
+  private _currentUser = new BehaviorSubject<FBUser>(null)
+  public readonly currentUser = this._currentUser.asObservable()
+
+  private _user = new BehaviorSubject<FSUser>(null)
+  public user = this._user.asObservable()
 
   constructor(public db: AngularFirestore, public afAuth: AngularFireAuth) {
     this.afAuth.user.subscribe((userData) => {
       if (userData) {
         const { displayName, providerData, photoURL, uid } = userData
 
-        this.currentUserBehaviour.next({
+        this._currentUser.next({
           image: photoURL,
           name: displayName,
           id: uid,
@@ -25,14 +27,17 @@ export class UserService {
         })
         return
       }
-      this.currentUserBehaviour.next(null)
+      this._currentUser.next(null)
     })
   }
 
   forceGetCurrentUser() {
-    return this.currentUserBehaviour.value
+    return this._currentUser.value
   }
 
+  getCurrentUserId() {
+    return this._currentUser.value.id
+  }
   async updateCurrentUser(value: { name: string }) {
     return await auth().currentUser.updateProfile({
       displayName: value.name,
@@ -46,5 +51,19 @@ export class UserService {
       .startAt(skip)
       .limit(take)
       .get()
+  }
+
+  async getUserById(userId: string) {
+    try {
+      const user = await firestore()
+        .collection('users')
+        .where('id', '==', userId)
+        .get()
+
+      this._user.next(user.docs.map((x) => x.data())[0] as FSUser)
+    } catch (error) {
+      console.log(error)
+      this._user.next(null)
+    }
   }
 }

@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+.resetA {
+  color: unset !important;
+}
+
+.resetA:hover {
+  text-decoration: none !important;
+}
+/*# sourceMappingURL=styles.css.map */

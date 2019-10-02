@@ -1,7 +1,15 @@
+$imageWidth: 38px;
+$imageMargin: 20px;
 .userImage {
-  margin-left: 20px;
+  margin-left: $imageMargin;
   img {
-    width: 38px;
+    width: $imageWidth;
     height: 38px;
   }
+}
+.signInButton {
+  margin-right: $imageMargin + $imageWidth;
+}
+button {
+  min-width: 84px;
 }

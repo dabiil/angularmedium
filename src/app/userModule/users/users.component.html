@@ -5,7 +5,7 @@
     class="col-sm-12 col-md-6 userCard"
     *ngFor="let userItem of getFilteredUser()"
   >
-    <a [routerLink]="['users', userItem.id]" class="resetA">
+    <a [routerLink]="['/users', userItem.id]" class="resetA">
       <div class="card mb-3">
         <div class="card-body">
           <div class="row mb-2">

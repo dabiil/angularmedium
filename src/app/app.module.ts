@@ -24,8 +24,8 @@ import { LayoutModule } from './layoutModule/layout.module'
       useHash: false,
     }),
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule, // imports firebase/firestore, only needed for database features
-    AngularFireAuthModule, // imports firebase/auth, only needed for auth features
+    AngularFirestoreModule,
+    AngularFireAuthModule,
     UserModule,
     LayoutModule,
   ],

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Location, CommonModule } from '@angular/common'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { FSUser, UserService, AuthService, FBUser } from '../../core'
+import { Subscription } from 'rxjs'
 
 @Component({
   selector: 'app-page-users',
@@ -12,22 +13,26 @@ import { FSUser, UserService, AuthService, FBUser } from '../../core'
 export class UsersComponent implements OnInit {
   currentUser: FBUser
   users: FSUser[] = []
-  // profileForm: FormGroup
 
   constructor(
     public userService: UserService,
     public authService: AuthService,
-    private route: ActivatedRoute // private location: Location, // private fb: FormBuilder
-  ) {}
+    private route: ActivatedRoute
+  ) {
+    console.log('hear')
+  }
 
   async ngOnInit() {
-    this.userService.currentUserObserver.subscribe((x) => {
+    console.log('init')
+    this.userService.currentUser.subscribe((x) => {
       this.currentUser = x
     })
     this.route.data.subscribe(({ users }) => {
       this.users = users
+      console.log(users)
     })
   }
+
   getFilteredUser() {
     return this.currentUser
       ? this.users.filter((x) => x.id !== this.currentUser.id)
