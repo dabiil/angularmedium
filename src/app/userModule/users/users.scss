@@ -1,3 +1,5 @@
+@import '../../../../node_modules/bootstrap/scss/bootstrap.scss';
+
 .header {
   text-align: center;
   font-size: 30px;
@@ -11,4 +13,11 @@
 
 .userCard {
   cursor: pointer;
+
+  &.lastChild {
+    @include media-breakpoint-up(lg) {
+      margin: 0 !important;
+      @include make-col(12);
+    }
+  }
 }
