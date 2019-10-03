@@ -2,7 +2,7 @@ import { Component, OnInit, ɵConsole } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Location, CommonModule } from '@angular/common'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
-import { FSUser, UserService, AuthService, FBUser } from '../../core'
+import { FSUser, UserService, AuthService } from '../../core'
 import { combineLatest } from 'rxjs'
 
 @Component({
@@ -11,28 +11,32 @@ import { combineLatest } from 'rxjs'
   styleUrls: ['users.scss'],
 })
 export class UserComponent {
-  currentUser: FBUser
+  currentUser: FSUser
   userId = ''
   selectedUser: FSUser = null
-
+  isCurrentUser = false
   constructor(
     public userService: UserService,
     public authService: AuthService,
     private route: ActivatedRoute, // private location: Location, // private fb: FormBuilder
     private router: Router
   ) {
-    console.log(route.snapshot)
-    combineLatest([this.userService.currentUser, this.route.params]).subscribe(
-      ([user, { userId }]) => {
-        this.currentUser = user
-
-        if (user && user.id === userId) {
-          this.router.navigate(['/users/me'])
-        }
-
-        this.userId = userId
+    combineLatest([
+      this.userService.currentUser,
+      this.route.params,
+      this.route.data,
+    ]).subscribe(([user, { userId }, { isCurrentUser }]) => {
+      if (!isCurrentUser && user && user.id === userId) {
+        this.router.navigate(['/users/me'])
+        return
       }
-    )
+
+      if (isCurrentUser) {
+        this.isCurrentUser = true
+      }
+      this.currentUser = user
+      this.userId = userId
+    })
     route.data.subscribe((data) => {
       this.selectedUser = data.user
     })

@@ -1,7 +1,6 @@
 export interface GetUsersConfig {
-  skip: number
+  lastUserId: string | null
   take: number
-  userId?: string
 }
 
 export interface FSUser {
@@ -10,9 +9,4 @@ export interface FSUser {
   image: string
 }
 
-export interface FBUser {
-  image: string
-  name: string
-  provider: string
-  id: string
-}
+export interface IUpdateCurrentUserProps extends Partial<FSUser> {}

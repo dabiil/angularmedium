@@ -1,41 +1,41 @@
 <h1 class="header">Users</h1>
 
 <div class="row">
-  <div
-    class="col-sm-12 col-md-10 col-lg-6 m-auto userCard"
-    *ngFor="
-      let userItem of getFilteredUser();
-      index as userIndex;
-      last as isLastUser
-    "
-    [ngClass]="{ lastChild: isLastUser && userIndex % 2 == 0 }"
+  <ng-container
+    *ngFor="let userItem of users; index as userIndex; last as isLastUser"
   >
-    <a [routerLink]="['/users', userItem.id]" class="resetA">
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="row mb-2">
-            <div class="col-2">
-              <img
-                [src]="userItem.image"
-                [alt]="userItem.name"
-                class="rounded-circle card-img image"
-              />
+    <div
+      class="col-sm-12 col-md-10 col-lg-6 m-auto userCard"
+      [ngClass]="{ lastChild: isLastUser && userIndex % 2 == 0 }"
+    >
+      <a [routerLink]="['/users', userItem.id]" class="resetA">
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row mb-2">
+              <div class="col-2">
+                <img
+                  [src]="userItem.image"
+                  [alt]="userItem.name"
+                  class="rounded-circle card-img image"
+                />
+              </div>
+              <div class="col-10 align-items-center d-flex">
+                <h5 class="card-title mb-0">{{ userItem.name }}</h5>
+              </div>
             </div>
-            <div class="col-10 align-items-center d-flex">
-              <h5 class="card-title mb-0">{{ userItem.name }}</h5>
-            </div>
-          </div>
 
-          <p class="card-text">
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This content is a little bit longer. TODO add
-            user profile info
-          </p>
-          <p class="card-text">
-            <small class="text-muted">Last updated 3 mins ago </small>
-          </p>
+            <p class="card-text">
+              This is a wider card with supporting text below as a natural
+              lead-in to additional content. This content is a little bit
+              longer. TODO add user profile info
+            </p>
+            <p class="card-text">
+              <small class="text-muted">Last updated 3 mins ago </small>
+            </p>
+          </div>
         </div>
-      </div>
-    </a>
-  </div>
+      </a>
+    </div>
+  </ng-container>
 </div>
+<div id="UsersIntersectionObserver"></div>

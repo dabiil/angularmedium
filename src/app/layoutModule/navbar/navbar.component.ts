@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
-import { UserService, AuthService, FBUser } from '../../core'
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'
+import { UserService, AuthService, FSUser } from '../../core'
 
 @Component({
   selector: 'app-navbar',
@@ -8,23 +7,23 @@ import { UserService, AuthService, FBUser } from '../../core'
   styleUrls: ['navbar.scss'],
 })
 export class NavbarComponent implements OnInit {
-  currentUser: FBUser
+  currentUser: FSUser
   constructor(
     public userService: UserService,
     public authService: AuthService,
-    private router: Router
+    private chRef: ChangeDetectorRef
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.userService.currentUser.subscribe((user) => {
       this.currentUser = user
+      this.chRef.detectChanges()
     })
   }
 
   async logIn() {
     try {
       await this.authService.doGoogleLogin()
-      this.router.navigate(['/'])
     } catch (error) {
       console.log(error)
     }
@@ -33,7 +32,6 @@ export class NavbarComponent implements OnInit {
   async logOut() {
     try {
       await this.authService.doLogout()
-      this.router.navigate(['/'])
     } catch (error) {
       console.log(error)
     }
