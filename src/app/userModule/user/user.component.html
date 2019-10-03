@@ -1,3 +1,27 @@
 <ng-container *ngIf="currentUser && isCurrentUser">
   <h1 class="header">How other users see your profile</h1>
+
+  <div class="card mb-4 mt-4">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-2">
+          <img
+            [src]="currentUser.image"
+            [alt]="currentUser.name"
+            class="rounded-circle card-img image"
+          />
+        </div>
+        <div class="col-10 align-items-center d-flex">
+          <h5 class="card-title mb-0">{{ currentUser.name }}</h5>
+        </div>
+      </div>
+
+      <p class="card-text">
+        {{ currentUser?.description }}
+      </p>
+      <p class="card-text">
+        <small class="text-muted">Last updated 3 mins ago </small>
+      </p>
+    </div>
+  </div>
 </ng-container>

@@ -19,6 +19,7 @@ const routes: Routes = [
     path: 'me',
     component: UserComponent,
     canActivate: [AuthGuard],
+    pathMatch: 'full',
     data: {
       isCurrentUser: true,
     },

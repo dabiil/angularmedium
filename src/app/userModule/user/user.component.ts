@@ -1,7 +1,5 @@
-import { Component, OnInit, ɵConsole } from '@angular/core'
+import { Component } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { Location, CommonModule } from '@angular/common'
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { FSUser, UserService, AuthService } from '../../core'
 import { combineLatest } from 'rxjs'
 
