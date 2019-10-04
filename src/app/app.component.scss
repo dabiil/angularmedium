@@ -1,3 +1,7 @@
-$icon-font-path: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/' !default;
+$icon-font-path: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/" !default;
 
-@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+.bufer {
+  height: 50px;
+}

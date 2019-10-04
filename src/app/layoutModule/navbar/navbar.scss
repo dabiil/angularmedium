@@ -2,6 +2,7 @@ $imageWidth: 38px;
 $imageMargin: 20px;
 .userImage {
   margin-left: $imageMargin;
+  cursor: pointer;
   img {
     width: $imageWidth;
     height: 38px;
@@ -12,4 +13,19 @@ $imageMargin: 20px;
 }
 button {
   min-width: 84px;
+}
+
+.fixedNavbar {
+  display: block;
+  position: fixed;
+  will-change: transform;
+  transition: transform 300ms ease;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  &.hide {
+    transform: translateY(-100%);
+  }
 }

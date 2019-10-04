@@ -1,5 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core'
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core'
 import { UserService, AuthService, FSUser } from '../../core'
+import { Router } from '@angular/router'
+import { fromEvent } from 'rxjs'
+import { map, scan, throttleTime } from 'rxjs/operators'
 
 @Component({
   selector: 'app-navbar',
@@ -8,10 +11,14 @@ import { UserService, AuthService, FSUser } from '../../core'
 })
 export class NavbarComponent implements OnInit {
   currentUser: FSUser
+  isHided = false
+
   constructor(
     public userService: UserService,
     public authService: AuthService,
-    private chRef: ChangeDetectorRef
+    private chRef: ChangeDetectorRef,
+    private router: Router,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -19,6 +26,21 @@ export class NavbarComponent implements OnInit {
       this.currentUser = user
       this.chRef.detectChanges()
     })
+
+    fromEvent(window, 'scroll')
+      .pipe(
+        throttleTime(50),
+        map(() => window.scrollY),
+        scan((prevValue, newValue) => {
+          if (newValue > prevValue) {
+            this.isHided = true
+          } else {
+            this.isHided = false
+          }
+          return newValue
+        }, 0)
+      )
+      .subscribe()
   }
 
   async logIn() {

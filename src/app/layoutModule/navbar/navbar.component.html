@@ -1,41 +1,44 @@
-<nav class="navbar navbar-dark bg-dark justify-content-between">
-  <div class="container">
-    <a class="navbar-brand" [routerLink]="['/']">
-      <img
-        src="assets/img/angular.svg"
-        width="30"
-        height="30"
-        alt=""
-        class="d-inline-block align-top"
-      />
-      Medium
-    </a>
-    <div class="navVontainer">
-      <button
-        *ngIf="currentUser == null"
-        class="btn btn-outline-light my-2 my-sm-0 signInButton"
-        type="button"
-        (click)="logIn()"
-        style="margin-right: 60px"
-      >
-        Sign In
-      </button>
-      <ng-container *ngIf="currentUser != null">
+<div class="fixedNavbar" [ngClass]="{ hide: isHided }">
+  <nav class="navbar navbar-dark bg-dark justify-content-between">
+    <div class="container">
+      <a class="navbar-brand" [routerLink]="['/']">
+        <img
+          src="assets/img/angular.svg"
+          width="30"
+          height="30"
+          alt=""
+          class="d-inline-block align-top"
+        />
+        Medium
+      </a>
+      <div>
         <button
-          class="btn btn-outline-light my-2 my-sm-0"
+          *ngIf="currentUser == null"
+          class="btn btn-outline-light my-2 my-sm-0 signInButton"
           type="button"
-          (click)="logOut()"
+          (click)="logIn()"
+          style="margin-right: 60px"
         >
-          Log Out
+          Sign In
         </button>
-        <a [routerLink]="['/users', 'me']" class="userImage">
-          <img
-            [src]="currentUser.image"
-            [alt]="currentUser.name"
-            class="rounded-circle"
-          />
-        </a>
-      </ng-container>
+        <ng-container *ngIf="currentUser != null">
+          <button
+            class="btn btn-outline-light my-2 my-sm-0"
+            type="button"
+            (click)="logOut()"
+          >
+            Log Out
+          </button>
+          <!-- [routerLink]="['/users/me']" -->
+          <a href="/users/me" class="userImage">
+            <img
+              [src]="currentUser.image"
+              [alt]="currentUser.name"
+              class="rounded-circle"
+            />
+          </a>
+        </ng-container>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</div>

@@ -16,12 +16,34 @@
         </div>
       </div>
 
-      <p class="card-text">
-        {{ currentUser?.description }}
-      </p>
-      <p class="card-text">
-        <small class="text-muted">Last updated 3 mins ago </small>
-      </p>
+      <textarea
+        (input)="onChangeDescription($event)"
+        name="description"
+        class="description card-text"
+        placeholder="Edit profile title"
+        [value]="descriptionInput"
+        (keypress)="onPress($event, area)"
+        #area
+        style="height: 2em"
+      ></textarea>
+      <div
+        class="validationDescription"
+        [ngClass]="{ inValid: descriptionError }"
+      >
+        <div>{{ descriptionInput.length }} / {{ 100 }}</div>
+      </div>
+      <div class="flexContainer">
+        <p class="card-text">
+          <small class="text-muted">Last updated 3 mins ago </small>
+        </p>
+        <button
+          type="button"
+          class="btn btn-dark"
+          [disabled]="isButtonDisabled"
+        >
+          Save
+        </button>
+      </div>
     </div>
   </div>
 </ng-container>

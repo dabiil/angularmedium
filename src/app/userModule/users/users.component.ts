@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router'
 import { Location, CommonModule } from '@angular/common'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { FSUser, UserService, AuthService } from '../../core'
-import { Subscription } from 'rxjs'
+import { Subscription, combineLatest } from 'rxjs'
 
 @Component({
   selector: 'app-page-users',
@@ -29,12 +29,12 @@ export class UsersComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.userService.currentUser.subscribe((x) => {
-      this.currentUser = x
-      this.chRef.detectChanges()
-    })
-    this.userService.users.subscribe((x) => {
-      this.users = x
+    combineLatest([
+      this.userService.currentUser,
+      this.userService.users,
+    ]).subscribe(([user, users]) => {
+      this.currentUser = user
+      this.users = users
       this.chRef.detectChanges()
     })
 
@@ -53,15 +53,9 @@ export class UsersComponent implements OnInit {
         })
       },
       {
-        rootMargin: '100px',
+        rootMargin: '150px',
       }
     )
     obs.observe(document.getElementById('UsersIntersectionObserver'))
-  }
-
-  get filteredUsers() {
-    return this.currentUser
-      ? this.users.filter((x) => x.id !== this.currentUser.id)
-      : this.users
   }
 }

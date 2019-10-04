@@ -7,6 +7,7 @@
     <div
       class="col-sm-12 col-md-10 col-lg-6 m-auto userCard"
       [ngClass]="{ lastChild: isLastUser && userIndex % 2 == 0 }"
+      *ngIf="currentUser ? userItem.id != currentUser.id : true"
     >
       <a [routerLink]="['/users', userItem.id]" class="resetA">
         <div class="card mb-4">

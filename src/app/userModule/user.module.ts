@@ -7,11 +7,6 @@ import { AuthGuard } from '../core'
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'users',
-    pathMatch: 'full',
-  },
-  {
     path: 'users',
     component: UsersComponent,
   },
@@ -19,10 +14,14 @@ const routes: Routes = [
     path: 'me',
     component: UserComponent,
     canActivate: [AuthGuard],
-    pathMatch: 'full',
     data: {
       isCurrentUser: true,
     },
+  },
+  {
+    path: '',
+    redirectTo: 'users',
+    pathMatch: 'full',
   },
   {
     path: ':userId',
