@@ -1,6 +1,6 @@
-import { Component } from '@angular/core'
+import { Component, NgZone, ChangeDetectorRef } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { FSUser, UserService, AuthService } from '../../core'
+import { FSUser, UserService, AuthService, UserUpdateData } from '../../core'
 import { combineLatest } from 'rxjs'
 
 @Component({
@@ -13,42 +13,67 @@ export class UserComponent {
   userId = ''
   selectedUser: FSUser = null
   isCurrentUser = false
-  hovered = false
+  editing = false
   descriptionError = false
   descriptionInput = ''
+  userName = ''
+  size = 2
+  imageUrl = ''
+  imageBlob: File
 
   constructor(
     public userService: UserService,
     public authService: AuthService,
     private route: ActivatedRoute, // private location: Location, // private fb: FormBuilder
-    private router: Router
+    private router: Router,
+    private chRef: ChangeDetectorRef
   ) {
     combineLatest([
       this.userService.currentUser,
       this.route.params,
       this.route.data,
-      this.userService.selectedUser,
-    ]).subscribe(
-      async ([user, { userId }, { isCurrentUser }, selectedUser]) => {
-        if (!isCurrentUser && user && user.id === userId) {
-          this.router.navigate(['/users/me'])
-          return
-        }
-
-        if (!isCurrentUser && this.userId !== userId) {
-          this.selectedUser = await this.userService.getUserById(userId)
-        } else {
-          this.selectedUser = isCurrentUser ? user : selectedUser
-        }
-
-        this.isCurrentUser = isCurrentUser
-        this.currentUser = user
-        this.userId = userId
+    ]).subscribe(async ([user, { userId }, { isCurrentUser }]) => {
+      if (!isCurrentUser && user && user.id === userId) {
+        this.router.navigate(['/users/me'])
+        return
       }
-    )
+
+      if (!isCurrentUser && this.userId !== userId) {
+        this.selectedUser = await this.userService.getUserById(userId)
+      } else {
+        this.selectedUser = isCurrentUser ? user : this.selectedUser
+      }
+      if (this.currentUser !== user && user) {
+        this.descriptionInput = user.description || ''
+        this.userName = user.name || ''
+        this.imageUrl =
+          user.image ||
+          'https://avatars0.githubusercontent.com/u/18034590?s=460&v=3'
+      }
+      this.isCurrentUser = isCurrentUser
+      this.currentUser = user
+      this.userId = userId
+      chRef.detectChanges()
+    })
   }
-  onHover(value: boolean) {
-    this.hovered = value
+
+  async onSaveSettings() {
+    const data: Partial<UserUpdateData> = {}
+    if (this.currentUser.name !== this.userName && this.userName !== '') {
+      data.name = this.userName
+    }
+    if (
+      this.currentUser.description !== this.descriptionInput &&
+      !this.descriptionError
+    ) {
+      data.description = this.descriptionInput
+    }
+    if (this.imageBlob) {
+      data.image = this.imageBlob
+    }
+
+    await this.userService.updateCurrentUser(data)
+    this.Editing(false)
   }
 
   onChangeDescription(e: any) {
@@ -62,13 +87,42 @@ export class UserComponent {
     const trimmed = value.replace(/\s+/g, ' ').trim()
     this.descriptionInput = trimmed
   }
+  onChangeUserName({ target }: any) {
+    const { value = '' } = target
+    this.userName = value.trim()
+  }
+
   onPress(e: any, element: HTMLElement) {
-    if (e.code === 'Enter' && element.style.height !== '10em') {
-      const reg = element.style.height.match(/(\d+)em/)
-      element.style.height = `${+reg[1] + 1}em`
+    if (e.code === 'Enter' && this.size !== 10) {
+      this.size++
     }
   }
-  get isButtonDisabled() {
-    return this.descriptionError
+  isButtonDisabled() {
+    return this.descriptionError || this.userName === ''
+  }
+  onInputHover(e: any) {
+    console.log('hear')
+    e.target.focus()
+  }
+  Editing(value: boolean) {
+    if (!value) {
+      this.userName = this.currentUser.name
+      this.descriptionInput = this.currentUser.description
+      this.imageUrl = this.currentUser.image
+    }
+    this.editing = value
+  }
+
+  inputImage({ target }) {
+    const { files } = target
+    const avatar: File = files[0]
+
+    const reader = new FileReader()
+    reader.readAsDataURL(avatar)
+    reader.onload = (e) => {
+      console.log(reader.result)
+      this.imageUrl = reader.result.toString()
+    }
+    this.imageBlob = avatar
   }
 }

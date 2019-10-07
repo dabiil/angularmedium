@@ -1,18 +1,51 @@
 <ng-container *ngIf="currentUser && isCurrentUser">
-  <h1 class="header">How other users see your profile</h1>
+  <div class="navigation">
+    <h1 class="header">How other users see your profile</h1>
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="Editing(false)"
+      *ngIf="editing"
+    >
+      Discard
+    </button>
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="Editing(true)"
+      *ngIf="!editing"
+    >
+      Edit
+    </button>
+  </div>
 
-  <div class="card mb-4 mt-4">
+  <div class="card mb-4 mt-4" *ngIf="editing">
     <div class="card-body">
       <div class="row mb-2">
         <div class="col-2">
+          <input
+            type="file"
+            #fileInput
+            (input)="inputImage($event)"
+            class="fileInput"
+            accept=".jpg, .jpeg, .png"
+          />
           <img
-            [src]="currentUser.image"
+            [src]="imageUrl"
             [alt]="currentUser.name"
             class="rounded-circle card-img image"
+            (click)="fileInput.click()"
           />
         </div>
         <div class="col-10 align-items-center d-flex">
-          <h5 class="card-title mb-0">{{ currentUser.name }}</h5>
+          <input
+            name="userName"
+            class="card-title mb-0 userInput"
+            [value]="userName"
+            (input)="onChangeUserName($event)"
+            placeholder="Edit profile name"
+            (mouseenter)="onInputHover($event)"
+          />
         </div>
       </div>
 
@@ -23,8 +56,9 @@
         placeholder="Edit profile title"
         [value]="descriptionInput"
         (keypress)="onPress($event, area)"
+        (mouseenter)="onInputHover($event)"
         #area
-        style="height: 2em"
+        [style.height.em]="size"
       ></textarea>
       <div
         class="validationDescription"
@@ -38,8 +72,9 @@
         </p>
         <button
           type="button"
-          class="btn btn-dark"
-          [disabled]="isButtonDisabled"
+          class="btn btn-success"
+          [disabled]="isButtonDisabled()"
+          (click)="onSaveSettings()"
         >
           Save
         </button>
@@ -47,3 +82,26 @@
     </div>
   </div>
 </ng-container>
+<div class="card mb-4 mt-4" *ngIf="!editing && selectedUser">
+  <div class="card-body">
+    <div class="row mb-2">
+      <div class="col-2">
+        <img
+          [src]="selectedUser.image"
+          [alt]="selectedUser.name"
+          class="rounded-circle card-img image"
+        />
+      </div>
+      <div class="col-10 align-items-center d-flex">
+        <h5 class="card-title mb-0">{{ selectedUser.name }}</h5>
+      </div>
+    </div>
+
+    <p class="card-text">
+      {{ selectedUser.description }}
+    </p>
+    <p class="card-text">
+      <small class="text-muted">Last updated 3 mins ago </small>
+    </p>
+  </div>
+</div>

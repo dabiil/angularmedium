@@ -2,12 +2,11 @@
 
 <div class="row">
   <ng-container
-    *ngFor="let userItem of users; index as userIndex; last as isLastUser"
+    *ngFor="let userItem of getUsers; index as userIndex; last as isLastUser"
   >
     <div
       class="col-sm-12 col-md-10 col-lg-6 m-auto userCard"
       [ngClass]="{ lastChild: isLastUser && userIndex % 2 == 0 }"
-      *ngIf="currentUser ? userItem.id != currentUser.id : true"
     >
       <a [routerLink]="['/users', userItem.id]" class="resetA">
         <div class="card mb-4">
@@ -26,9 +25,7 @@
             </div>
 
             <p class="card-text">
-              This is a wider card with supporting text below as a natural
-              lead-in to additional content. This content is a little bit
-              longer. TODO add user profile info
+              {{ userItem.description }}
             </p>
             <p class="card-text">
               <small class="text-muted">Last updated 3 mins ago </small>

@@ -58,4 +58,9 @@ export class UsersComponent implements OnInit {
     )
     obs.observe(document.getElementById('UsersIntersectionObserver'))
   }
+  get getUsers() {
+    return this.currentUser
+      ? this.users.filter((x) => x.id !== this.currentUser.id)
+      : this.users
+  }
 }

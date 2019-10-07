@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core'
 import { AngularFirestore } from '@angular/fire/firestore'
 import { AngularFireAuth } from '@angular/fire/auth'
+import { AngularFireStorage } from '@angular/fire/storage'
 import { auth, User, firestore } from 'firebase/app'
 import { GetUsersConfig } from '../core'
-import { FSUser, IUpdateCurrentUserProps } from './types'
+import { FSUser, UserUpdateData } from './types'
 import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable({
@@ -13,13 +14,14 @@ export class UserService {
   private _currentUser = new BehaviorSubject<FSUser>(null)
   public readonly currentUser = this._currentUser.asObservable()
 
-  private _selectedUser = new BehaviorSubject<FSUser>(null)
-  public readonly selectedUser = this._selectedUser.asObservable()
-
   private _users = new BehaviorSubject<FSUser[]>([])
   public readonly users = this._users.asObservable()
 
-  constructor(public db: AngularFirestore, public afAuth: AngularFireAuth) {
+  constructor(
+    public db: AngularFirestore,
+    public afAuth: AngularFireAuth,
+    public storage: AngularFireStorage
+  ) {
     this.afAuth.user.subscribe(async (userData) => {
       if (userData) {
         const { uid } = userData
@@ -45,22 +47,29 @@ export class UserService {
     }
   }
 
-  async updateCurrentUser(value: IUpdateCurrentUserProps) {
-    const id = this.getCurrentUserId()
-    if (!id) {
+  async updateCurrentUser(value: Partial<UserUpdateData>) {
+    const currentUser = this.forceGetCurrentUser()
+    let newImageUrl: string = null
+    if (!currentUser || !currentUser.id) {
       console.log('user not authentificated')
     }
-
+    const { id } = currentUser
     try {
-      const authUser = this.afAuth.auth.currentUser
-      if (!authUser) {
-        console.log('user not authentificated')
+      console.log(value)
+      const updateData = {
+        ...this._currentUser.value,
+        ...value,
+      }
+
+      if (value.image) {
+        newImageUrl = await this.updateImage(value.image, id)
+        updateData.image = newImageUrl
       }
 
       await firestore()
         .collection('users')
         .doc(id)
-        .set(value)
+        .set(updateData)
 
       const newData = await firestore()
         .collection('users')
@@ -70,10 +79,25 @@ export class UserService {
       const newUser = newData.data() as FSUser
       this._currentUser.next(newUser)
 
-      this._users.next([...this._users.value, newUser])
+      this._users.next([
+        ...this._users.value.filter((x) => x.id !== id),
+        newUser,
+      ])
     } catch (error) {
       console.log(error)
     }
+  }
+
+  private async updateImage(image: File, userId: string) {
+    const avatarRef = this.storage.storage.ref(`avatars/${userId}`)
+    try {
+      await avatarRef.delete()
+    } catch (error) {
+      console.log(error)
+    }
+
+    const uploaded = await avatarRef.put(image)
+    return await uploaded.ref.getDownloadURL()
   }
 
   async createNewUser(user: FSUser) {
@@ -107,6 +131,7 @@ export class UserService {
         .collection('users')
         .doc(userId)
         .get()
+
       return data.data() as FSUser
     } catch (error) {
       console.log(error)

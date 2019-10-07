@@ -5,6 +5,7 @@ import { rootRouterConfig } from './app.routes'
 import { AngularFireModule } from '@angular/fire'
 import { AngularFireAuthModule } from '@angular/fire/auth'
 import { AngularFirestoreModule } from '@angular/fire/firestore'
+import { AngularFireStorageModule } from '@angular/fire/storage'
 import { environment } from '../environments/environment'
 import { LoginComponent } from './login/login.component'
 
@@ -26,6 +27,7 @@ import { LayoutModule } from './layoutModule/layout.module'
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    AngularFireStorageModule,
     UserModule,
     LayoutModule,
   ],

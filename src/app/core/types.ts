@@ -10,4 +10,8 @@ export interface FSUser {
   description?: string
 }
 
-export interface IUpdateCurrentUserProps extends Partial<FSUser> {}
+export interface UserUpdateData {
+  image: File
+  description: String
+  name: string
+}
