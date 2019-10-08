@@ -1,6 +1,13 @@
 import { Component, NgZone, ChangeDetectorRef } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { FSUser, UserService, AuthService, UserUpdateData } from '../../core'
+import {
+  IUser,
+  UserService,
+  AuthService,
+  UserUpdateData,
+  PostService,
+  IPost,
+} from '../../core'
 import { combineLatest } from 'rxjs'
 
 @Component({
@@ -9,9 +16,9 @@ import { combineLatest } from 'rxjs'
   styleUrls: ['user.scss'],
 })
 export class UserComponent {
-  currentUser: FSUser
+  currentUser: IUser
   userId = ''
-  selectedUser: FSUser = null
+  selectedUser: IUser = null
   isCurrentUser = false
   editing = false
   descriptionError = false
@@ -21,18 +28,21 @@ export class UserComponent {
   imageUrl = ''
   imageBlob: File
 
+  posts: IPost[] = []
   constructor(
     public userService: UserService,
     public authService: AuthService,
     private route: ActivatedRoute, // private location: Location, // private fb: FormBuilder
     private router: Router,
-    private chRef: ChangeDetectorRef
+    private chRef: ChangeDetectorRef,
+    private postService: PostService
   ) {
     combineLatest([
       this.userService.currentUser,
       this.route.params,
       this.route.data,
-    ]).subscribe(async ([user, { userId }, { isCurrentUser }]) => {
+      this.postService.posts,
+    ]).subscribe(async ([user, { userId }, { isCurrentUser }, posts]) => {
       if (!isCurrentUser && user && user.id === userId) {
         this.router.navigate(['/users/me'])
         return
@@ -53,6 +63,7 @@ export class UserComponent {
       this.isCurrentUser = isCurrentUser
       this.currentUser = user
       this.userId = userId
+      this.posts = posts
       chRef.detectChanges()
     })
   }

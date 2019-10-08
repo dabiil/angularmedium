@@ -4,17 +4,17 @@ import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireStorage } from '@angular/fire/storage'
 import { auth, User, firestore } from 'firebase/app'
 import { GetUsersConfig } from '../core'
-import { FSUser, UserUpdateData } from './types'
+import { IUser, UserUpdateData } from './types'
 import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private _currentUser = new BehaviorSubject<FSUser>(null)
+  private _currentUser = new BehaviorSubject<IUser>(null)
   public readonly currentUser = this._currentUser.asObservable()
 
-  private _users = new BehaviorSubject<FSUser[]>([])
+  private _users = new BehaviorSubject<IUser[]>([])
   public readonly users = this._users.asObservable()
 
   constructor(
@@ -39,7 +39,7 @@ export class UserService {
     return this._currentUser.value
   }
 
-  getCurrentUserId() {
+  getCurrentUserId(): string | null {
     try {
       return this._currentUser.value.id
     } catch {
@@ -76,7 +76,7 @@ export class UserService {
         .doc(id)
         .get()
 
-      const newUser = newData.data() as FSUser
+      const newUser = newData.data() as IUser
       this._currentUser.next(newUser)
 
       this._users.next([
@@ -100,7 +100,7 @@ export class UserService {
     return await uploaded.ref.getDownloadURL()
   }
 
-  async createNewUser(user: FSUser) {
+  async createNewUser(user: IUser) {
     await firestore()
       .collection('users')
       .doc(user.id)
@@ -119,20 +119,20 @@ export class UserService {
     query = query.limit(take)
     const data = await query.get()
 
-    const users = data.docs.map((x) => x.data() as FSUser)
+    const users = data.docs.map((x) => x.data() as IUser)
 
     this._users.next([...this._users.value, ...users])
     return users
   }
 
-  async getUserById(userId: string): Promise<FSUser> {
+  async getUserById(userId: string): Promise<IUser> {
     try {
       const data = await firestore()
         .collection('users')
         .doc(userId)
         .get()
 
-      return data.data() as FSUser
+      return data.data() as IUser
     } catch (error) {
       console.log(error)
       return null

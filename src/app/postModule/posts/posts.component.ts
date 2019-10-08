@@ -14,11 +14,11 @@ import { IUser, UserService, AuthService } from '../../core'
 import { Subscription, combineLatest } from 'rxjs'
 
 @Component({
-  selector: 'app-page-users',
-  templateUrl: 'users.component.html',
-  styleUrls: ['users.scss'],
+  selector: 'app-page-posts',
+  templateUrl: 'posts.component.html',
+  styleUrls: ['posts.scss'],
 })
-export class UsersComponent implements OnInit {
+export class PostsComponent implements OnInit {
   currentUser: IUser
   users: IUser[] = []
 
@@ -26,7 +26,9 @@ export class UsersComponent implements OnInit {
     public userService: UserService,
     public authService: AuthService,
     private chRef: ChangeDetectorRef
-  ) {}
+  ) {
+    console.log('psots')
+  }
 
   ngOnInit() {
     combineLatest([

@@ -3,7 +3,7 @@ export interface GetUsersConfig {
   take: number
 }
 
-export interface FSUser {
+export interface IUser {
   name: string
   id: string
   image: string
@@ -14,4 +14,14 @@ export interface UserUpdateData {
   image: File
   description: String
   name: string
+}
+
+export interface IPost {
+  id: string
+  createdAt: string
+  createdBy: 'angular' | 'react'
+  title: string
+  content: string
+  author: string
+  description: string
 }

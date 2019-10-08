@@ -13,6 +13,11 @@ export const rootRouterConfig: Routes = [
       import('./userModule/user.module').then((m) => m.UserModule),
   },
   {
+    path: 'posts',
+    loadChildren: () =>
+      import('./postModule/post.module').then((m) => m.PostModule),
+  },
+  {
     path: '**',
     redirectTo: '/',
   },

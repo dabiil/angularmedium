@@ -1,0 +1,37 @@
+<ng-container *ngIf="selectedAuthor && post">
+  <article class="!editable">
+    <ng-container *ngIf="selectedAuthor.id == post.id">
+      <div class="btn btn-success" (click)="editable = true">
+        Edit
+      </div>
+    </ng-container>
+    <div>
+      <a [routerLink]="['users', selectedAuthor.id]" class="author">
+        <img [src]="selectedAuthor.image" [alt]="selectedAuthor.name" />
+      </a>
+      <h1 class="title">
+        {{ post.title }}
+      </h1>
+    </div>
+    <div class="description">
+      {{ post.description }}
+    </div>
+    <markdown [data]="inputContent"> </markdown>
+  </article>
+  <ng-container *ngIf="editable">
+    <div class="container">
+      <h1>Editing</h1>
+      <div class="btnContainer">
+        <div class="btn btn-success" (click)="onTogglePreview()">
+          {{ preview ? 'Edit' : 'Preview' }}
+        </div>
+        <div class="btn btn-success" (click)="onSave()">
+          Save
+        </div>
+      </div>
+    </div>
+
+    <markdown [data]="inputContent" *ngIf="preview"> </markdown>
+    <textarea (input)="onInput($event)" *ngIf="!preview"></textarea>
+  </ng-container>
+</ng-container>

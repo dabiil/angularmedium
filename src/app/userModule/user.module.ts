@@ -4,14 +4,11 @@ import { UserComponent } from './user'
 import { Location, CommonModule } from '@angular/common'
 import { RouterModule, Routes } from '@angular/router'
 import { AuthGuard } from '../core'
+import { PostModule } from '../postModule/post.module'
 
 const routes: Routes = [
   {
-    path: 'users',
-    component: UsersComponent,
-  },
-  {
-    path: 'me',
+    path: 'users/me',
     component: UserComponent,
     canActivate: [AuthGuard],
     data: {
@@ -19,18 +16,18 @@ const routes: Routes = [
     },
   },
   {
-    path: '',
+    path: 'users',
     redirectTo: 'users',
     pathMatch: 'full',
   },
   {
-    path: ':userId',
+    path: 'users/:userId',
     component: UserComponent,
   },
 ]
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes)],
+  imports: [CommonModule, RouterModule.forChild(routes), PostModule],
   declarations: [UsersComponent, UserComponent],
   providers: [],
 })

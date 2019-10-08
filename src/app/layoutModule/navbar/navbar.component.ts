@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core'
-import { UserService, AuthService, FSUser } from '../../core'
+import { UserService, AuthService, IUser } from '../../core'
 import { Router } from '@angular/router'
 import { fromEvent } from 'rxjs'
 import { map, scan, throttleTime } from 'rxjs/operators'
@@ -10,7 +10,7 @@ import { map, scan, throttleTime } from 'rxjs/operators'
   styleUrls: ['navbar.scss'],
 })
 export class NavbarComponent implements OnInit {
-  currentUser: FSUser
+  currentUser: IUser
   isHided = false
 
   constructor(

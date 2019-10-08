@@ -9,12 +9,13 @@ import { AngularFireStorageModule } from '@angular/fire/storage'
 import { environment } from '../environments/environment'
 import { LoginComponent } from './login/login.component'
 
-import { AuthGuard, AuthService, UserService } from './core'
+import { AuthGuard, AuthService, UserService, PostService } from './core'
 import { ReactiveFormsModule } from '@angular/forms'
-
+import { MarkdownModule } from 'ngx-markdown'
 import { AppComponent } from './app.component'
 import { UserModule } from './userModule/user.module'
 import { LayoutModule } from './layoutModule/layout.module'
+import { PostModule } from './postModule/post.module'
 
 @NgModule({
   declarations: [AppComponent, LoginComponent],
@@ -30,8 +31,10 @@ import { LayoutModule } from './layoutModule/layout.module'
     AngularFireStorageModule,
     UserModule,
     LayoutModule,
+    PostModule,
+    MarkdownModule.forRoot(),
   ],
-  providers: [AuthService, UserService, AuthGuard],
+  providers: [AuthService, UserService, AuthGuard, PostService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
