@@ -1,4 +1,4 @@
-@import '../../../../node_modules/bootstrap/scss/bootstrap.scss';
+@import "../../../../node_modules/bootstrap/scss/bootstrap.scss";
 
 .header {
   text-align: center;
@@ -19,5 +19,8 @@
       margin: 0 !important;
       @include make-col(12);
     }
+  }
+  .card-body {
+    overflow: hidden;
   }
 }

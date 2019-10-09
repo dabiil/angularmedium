@@ -64,7 +64,7 @@
         class="validationDescription"
         [ngClass]="{ inValid: descriptionError }"
       >
-        <div>{{ descriptionInput.length }} / {{ 100 }}</div>
+        <div>{{ descriptionInput.length }} / {{ 250 }}</div>
       </div>
       <div class="flexContainer">
         <p class="card-text">
@@ -106,19 +106,29 @@
   </div>
 </div>
 
-<h1 class="header">Posts</h1>
-
-<div class="row">
-  <ng-container *ngIf="currentUser && isCurrentUser">
-    <div class="col-12 buttonContainer">
-      <a class="btn btn-success" href="#" role="button">Write new Post</a>
+<ng-container *ngIf="selectedUser && posts && posts.length !== 0">
+  <h1 class="header">Posts</h1>
+  <div class="row">
+    <ng-container *ngIf="currentUser && isCurrentUser">
+      <div class="col-12 buttonContainer">
+        <a class="btn btn-success" href="#" role="button">Write new Post</a>
+      </div>
+    </ng-container>
+    <div
+      class="col-sm-12 col-md-10 col-lg-6 m-auto post"
+      *ngFor="let post of posts; index as postIndex; last as isLastPost"
+      [ngClass]="{ lastChild: isLastPost && postIndex % 2 == 0 }"
+    >
+      <app-post-preview
+        [author]="selectedUser"
+        [post]="post"
+      ></app-post-preview>
     </div>
-  </ng-container>
-  <div
-    class="col-sm-12 col-md-10 col-lg-6 m-auto post"
-    *ngFor="let post of posts; index as postIndex; last as isLastPost"
-    [ngClass]="{ lastChild: isLastPost && postIndex % 2 == 0 }"
-  >
-    <app-post-preview [author]="selectedUser" [post]="post"></app-post-preview>
   </div>
-</div>
+</ng-container>
+<ng-container *ngIf="selectedUser === null">
+  <h1 class="header">This user not exist</h1>
+  <a class="btn btn-success" [routerLink]="['/users']" role="button"
+    >Go to users</a
+  >
+</ng-container>

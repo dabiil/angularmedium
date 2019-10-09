@@ -50,15 +50,14 @@ export class PostService {
         .orderBy('createdAt')
         .where('author', '==', userId)
         .get()
-
+      console.log(postDocuments)
       return postDocuments.docs.map((x) => x.data()) as IPost[]
     } catch (error) {
       console.log(error)
       return []
     }
   }
-  async updateCurrentUSerPosts(userId: string) {
-    this._posts.next([])
+  async updateCurrentUserPosts(userId: string) {
     const posts = await this.getPostsByUser(userId)
     this._posts.next(posts)
     return posts

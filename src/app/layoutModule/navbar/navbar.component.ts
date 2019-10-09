@@ -26,7 +26,6 @@ export class NavbarComponent implements OnInit {
       this.currentUser = user
       this.chRef.detectChanges()
     })
-
     fromEvent(window, 'scroll')
       .pipe(
         throttleTime(50),
@@ -41,6 +40,11 @@ export class NavbarComponent implements OnInit {
         }, 0)
       )
       .subscribe()
+  }
+
+  async navigate(path: any[], e: any) {
+    e.preventDefault()
+    await this.ngZone.run(() => this.router.navigate(path))
   }
 
   async logIn() {

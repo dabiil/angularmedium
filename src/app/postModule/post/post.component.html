@@ -1,37 +1,71 @@
 <ng-container *ngIf="selectedAuthor && post">
   <article class="!editable">
-    <ng-container *ngIf="selectedAuthor.id == post.id">
+    <ng-container *ngIf="currentUser.id == post.author">
       <div class="btn btn-success" (click)="editable = true">
         Edit
       </div>
     </ng-container>
-    <div>
-      <a [routerLink]="['users', selectedAuthor.id]" class="author">
-        <img [src]="selectedAuthor.image" [alt]="selectedAuthor.name" />
-      </a>
-      <h1 class="title">
-        {{ post.title }}
-      </h1>
-    </div>
-    <div class="description">
+
+    <h1 class="title">
+      {{ post.title }}
+    </h1>
+
+    <h2 class="description">
       {{ post.description }}
-    </div>
+    </h2>
+    <a [routerLink]="['users', selectedAuthor.id]" class="author">
+      <img [src]="selectedAuthor.image" [alt]="selectedAuthor.name" />
+    </a>
     <markdown [data]="inputContent"> </markdown>
   </article>
-  <ng-container *ngIf="editable">
-    <div class="container">
-      <h1>Editing</h1>
-      <div class="btnContainer">
-        <div class="btn btn-success" (click)="onTogglePreview()">
-          {{ preview ? 'Edit' : 'Preview' }}
-        </div>
-        <div class="btn btn-success" (click)="onSave()">
-          Save
-        </div>
+</ng-container>
+<ng-container *ngIf="editable || isNewPost">
+  <div class="container">
+    <h1 class="header">Editing</h1>
+    <div class="btnContainer">
+      <div class="btn btn-success" (click)="onTogglePreview()">
+        {{ preview ? 'Edit' : 'Preview' }}
       </div>
+      <button
+        class="btn btn-success saveBtn"
+        (click)="onSave()"
+        [disabled]="validateSaveButton()"
+      >
+        {{ isNewPost ? 'Create' : 'Save' }}
+      </button>
     </div>
-
-    <markdown [data]="inputContent" *ngIf="preview"> </markdown>
-    <textarea (input)="onInput($event)" *ngIf="!preview"></textarea>
-  </ng-container>
+  </div>
+  <div class="markdown" *ngIf="preview">
+    <div>
+      <h1 class="title">
+        {{ inputTitle || 'Some title' }}
+      </h1>
+    </div>
+    <h2 class="description">
+      {{ inputDescroption || 'Some description' }}
+    </h2>
+    <markdown [data]="inputContent || '**Pls write something**'"> </markdown>
+  </div>
+  <div class="editableContainer" *ngIf="!preview">
+    <div class="titleInput">
+      <input
+        (input)="onInput($event, 'title')"
+        placeholder="Entere title"
+        required
+      />
+    </div>
+    <div class="descriptionInput">
+      <input
+        (input)="onInput($event, 'description')"
+        placeholder="Enter description"
+        required
+      />
+    </div>
+    <textarea
+      (input)="onInput($event, 'content')"
+      class="contentInput"
+      placeholder="Write some post"
+      >{{ inputContent }}</textarea
+    >
+  </div>
 </ng-container>

@@ -23,6 +23,14 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'posts/newPost',
+    component: PostComponent,
+    pathMatch: 'full',
+    data: {
+      isNewPost: true,
+    },
+  },
+  {
     path: 'posts/:postId',
     component: PostComponent,
   },

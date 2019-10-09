@@ -1,7 +1,7 @@
 <div class="fixedNavbar" [ngClass]="{ hide: isHided }">
   <nav class="navbar navbar-dark bg-dark justify-content-between">
     <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">
+      <a class="navbar-brand" href="/" (click)="navigate(['/'], $event)">
         <img
           src="assets/img/angular.svg"
           width="30"
@@ -29,8 +29,11 @@
           >
             Log Out
           </button>
-          <!-- [routerLink]="['/users/me']" -->
-          <a href="/users/me" class="userImage">
+          <a
+            [href]="'/users/' + currentUser.id"
+            (click)="navigate(['users', currentUser.id], $event)"
+            class="userImage"
+          >
             <img
               [src]="currentUser.image"
               [alt]="currentUser.name"

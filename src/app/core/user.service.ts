@@ -83,6 +83,7 @@ export class UserService {
         ...this._users.value.filter((x) => x.id !== id),
         newUser,
       ])
+      return newUser
     } catch (error) {
       console.log(error)
     }
@@ -131,8 +132,7 @@ export class UserService {
         .collection('users')
         .doc(userId)
         .get()
-
-      return data.data() as IUser
+      return (data.data() as IUser) || null
     } catch (error) {
       console.log(error)
       return null

@@ -1,4 +1,4 @@
-import { Component, NgZone, ChangeDetectorRef } from '@angular/core'
+import { Component, NgZone, ChangeDetectorRef, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import {
   IUser,
@@ -15,11 +15,11 @@ import { combineLatest } from 'rxjs'
   templateUrl: 'user.component.html',
   styleUrls: ['user.scss'],
 })
-export class UserComponent {
+export class UserComponent implements OnInit {
   currentUser: IUser
   userId = ''
-  selectedUser: IUser = null
-  isCurrentUser = false
+  selectedUser: IUser = undefined
+  isCurrentUser = null
   editing = false
   descriptionError = false
   descriptionInput = ''
@@ -36,38 +36,31 @@ export class UserComponent {
     private router: Router,
     private chRef: ChangeDetectorRef,
     private postService: PostService
-  ) {
-    combineLatest([
-      this.userService.currentUser,
-      this.route.params,
-      this.route.data,
-      this.postService.posts,
-    ]).subscribe(async ([user, { userId }, { isCurrentUser }, posts]) => {
-      if (!isCurrentUser && user && user.id === userId) {
-        this.router.navigate(['/users/me'])
-        return
-      }
+  ) {}
+  ngOnInit() {
+    combineLatest([this.userService.currentUser, this.route.params]).subscribe(
+      ([user, { userId }]) => {
+        this.currentUser = user
 
-      if (!isCurrentUser && this.userId !== userId) {
-        this.selectedUser = await this.userService.getUserById(userId)
-      } else {
-        this.selectedUser = isCurrentUser ? user : this.selectedUser
+        this.isCurrentUser = !!(user && user.id === userId)
+        this.chRef.detectChanges()
+        console.log(user, this.isCurrentUser)
       }
-      if (this.currentUser !== user && user) {
-        this.descriptionInput = user.description || ''
-        this.userName = user.name || ''
-        this.imageUrl =
-          user.image ||
-          'https://avatars0.githubusercontent.com/u/18034590?s=460&v=3'
-      }
-      this.isCurrentUser = isCurrentUser
-      this.currentUser = user
-      this.userId = userId
+    )
+    this.route.params.subscribe(async ({ userId }) => {
+      const user = await this.userService.getUserById(userId)
+      const posts = await this.postService.updateCurrentUserPosts(userId)
+      this.selectedUser = user
       this.posts = posts
-      chRef.detectChanges()
+      this.userId = userId
+      this.chRef.detectChanges()
+      console.log(userId, user, posts)
+    })
+    this.postService.posts.subscribe((x) => {
+      this.posts = x
+      this.chRef.detectChanges()
     })
   }
-
   async onSaveSettings() {
     const data: Partial<UserUpdateData> = {}
     if (this.currentUser.name !== this.userName && this.userName !== '') {
@@ -83,13 +76,14 @@ export class UserComponent {
       data.image = this.imageBlob
     }
 
-    await this.userService.updateCurrentUser(data)
+    this.selectedUser = await this.userService.updateCurrentUser(data)
     this.Editing(false)
+    this.chRef.detectChanges()
   }
 
   onChangeDescription(e: any) {
     const { value }: { value: string } = e.target
-    if (value.length >= 100) {
+    if (value.length > 250) {
       this.descriptionError = true
     } else {
       this.descriptionError = false
@@ -97,6 +91,7 @@ export class UserComponent {
 
     const trimmed = value.replace(/\s+/g, ' ').trim()
     this.descriptionInput = trimmed
+    this.chRef.detectChanges()
   }
   onChangeUserName({ target }: any) {
     const { value = '' } = target
@@ -112,16 +107,16 @@ export class UserComponent {
     return this.descriptionError || this.userName === ''
   }
   onInputHover(e: any) {
-    console.log('hear')
     e.target.focus()
   }
   Editing(value: boolean) {
-    if (!value) {
+    if (value) {
       this.userName = this.currentUser.name
       this.descriptionInput = this.currentUser.description
       this.imageUrl = this.currentUser.image
     }
     this.editing = value
+    this.chRef.detectChanges()
   }
 
   inputImage({ target }) {

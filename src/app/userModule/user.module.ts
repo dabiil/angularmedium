@@ -8,21 +8,17 @@ import { PostModule } from '../postModule/post.module'
 
 const routes: Routes = [
   {
-    path: 'users/me',
-    component: UserComponent,
-    canActivate: [AuthGuard],
-    data: {
-      isCurrentUser: true,
-    },
-  },
-  {
     path: 'users',
-    redirectTo: 'users',
-    pathMatch: 'full',
+    component: UsersComponent,
   },
   {
     path: 'users/:userId',
     component: UserComponent,
+  },
+  {
+    path: '',
+    redirectTo: 'users',
+    pathMatch: 'full',
   },
 ]
 
