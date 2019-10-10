@@ -1,13 +1,6 @@
 import { Component, NgZone, ChangeDetectorRef, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import {
-  IUser,
-  UserService,
-  AuthService,
-  UserUpdateData,
-  PostService,
-  IPost,
-} from '../../core'
+import { IUser, UserService, AuthService, PostService, IPost } from '../../core'
 import { combineLatest } from 'rxjs'
 
 @Component({
@@ -35,34 +28,36 @@ export class UserComponent implements OnInit {
     private route: ActivatedRoute, // private location: Location, // private fb: FormBuilder
     private router: Router,
     private chRef: ChangeDetectorRef,
-    private postService: PostService
+    private postService: PostService,
+    private zone: NgZone
   ) {}
   ngOnInit() {
     combineLatest([this.userService.currentUser, this.route.params]).subscribe(
       ([user, { userId }]) => {
-        this.currentUser = user
+        this.zone.run(() => {
+          this.currentUser = user
 
-        this.isCurrentUser = !!(user && user.id === userId)
-        this.chRef.detectChanges()
-        console.log(user, this.isCurrentUser)
+          this.isCurrentUser = !!(user && user.id === userId)
+        })
       }
     )
     this.route.params.subscribe(async ({ userId }) => {
       const user = await this.userService.getUserById(userId)
       const posts = await this.postService.updateCurrentUserPosts(userId)
-      this.selectedUser = user
-      this.posts = posts
-      this.userId = userId
-      this.chRef.detectChanges()
-      console.log(userId, user, posts)
+      this.zone.run(() => {
+        this.selectedUser = user
+        this.posts = posts
+        this.userId = userId
+      })
     })
     this.postService.posts.subscribe((x) => {
-      this.posts = x
-      this.chRef.detectChanges()
+      this.zone.run(() => {
+        this.posts = x
+      })
     })
   }
   async onSaveSettings() {
-    const data: Partial<UserUpdateData> = {}
+    const data: Partial<IUser> = {}
     if (this.currentUser.name !== this.userName && this.userName !== '') {
       data.name = this.userName
     }
@@ -75,10 +70,11 @@ export class UserComponent implements OnInit {
     if (this.imageBlob) {
       data.image = this.imageBlob
     }
-
-    this.selectedUser = await this.userService.updateCurrentUser(data)
-    this.Editing(false)
-    this.chRef.detectChanges()
+    const newUser = await this.userService.updateCurrentUser(data)
+    this.zone.run(() => {
+      this.selectedUser = newUser
+      this.Editing(false)
+    })
   }
 
   onChangeDescription(e: any) {
@@ -91,7 +87,6 @@ export class UserComponent implements OnInit {
 
     const trimmed = value.replace(/\s+/g, ' ').trim()
     this.descriptionInput = trimmed
-    this.chRef.detectChanges()
   }
   onChangeUserName({ target }: any) {
     const { value = '' } = target
@@ -113,10 +108,9 @@ export class UserComponent implements OnInit {
     if (value) {
       this.userName = this.currentUser.name
       this.descriptionInput = this.currentUser.description
-      this.imageUrl = this.currentUser.image
+      this.imageUrl = this.currentUser.image as string
     }
     this.editing = value
-    this.chRef.detectChanges()
   }
 
   inputImage({ target }) {
@@ -130,5 +124,14 @@ export class UserComponent implements OnInit {
       this.imageUrl = reader.result.toString()
     }
     this.imageBlob = avatar
+  }
+  getActivity() {
+    if (!this.selectedUser.lastActivity) {
+      return null
+    }
+    return new Date(this.selectedUser.lastActivity).toLocaleDateString('en', {
+      day: 'numeric',
+      month: 'short',
+    })
   }
 }

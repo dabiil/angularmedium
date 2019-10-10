@@ -4,7 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireStorage } from '@angular/fire/storage'
 import { auth, User, firestore } from 'firebase/app'
 import { UserService } from './user.service'
-import { IPost, UserUpdateData } from './types'
+import { IPost } from './types'
 import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable({
@@ -37,7 +37,6 @@ export class PostService {
   }
 
   async updateSelectedPost(postId: string): Promise<IPost> {
-    this._selectedPost.next(null)
     const post = await this.getPostById(postId)
     this._selectedPost.next(post)
     return post
@@ -77,19 +76,20 @@ export class PostService {
         throw new Error('post id error')
       }
 
-      const newPost: IPost = {
-        ...currentPost,
-        ...editablePost,
-      }
-
-      if (newPost.author !== currentUserId) {
+      if (editablePost.author !== currentUserId) {
         throw new Error('this post not this user')
       }
 
       await firestore()
         .collection('posts')
-        .doc(newPost.id)
-        .update(newPost)
+        .doc(editablePost.id)
+        .update(editablePost)
+
+      const newPost: IPost = {
+        ...currentPost,
+        ...editablePost,
+      }
+      this._selectedPost.next(newPost)
       return newPost
     } catch (error) {
       console.log(error)

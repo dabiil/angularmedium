@@ -24,7 +24,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.userService.currentUser.subscribe((user) => {
       this.currentUser = user
-      this.chRef.detectChanges()
+      this.chRef.markForCheck()
     })
     fromEvent(window, 'scroll')
       .pipe(

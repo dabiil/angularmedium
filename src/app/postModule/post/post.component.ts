@@ -25,28 +25,32 @@ export class PostComponent {
     private route: ActivatedRoute,
     private router: Router,
     private chRef: ChangeDetectorRef,
-    private postService: PostService
+    private postService: PostService,
+    private zone: NgZone
   ) {
-    combineLatest([
-      this.userService.currentUser,
-      this.route.params,
-      this.postService.selectedPost,
-      this.route.data,
-    ]).subscribe(async ([user, { postId }, post, { isNewPost }]) => {
-      if (this.post && post.id !== this.post.id) {
-        this.selectedAuthor = await this.userService.getUserById(post.author)
+    this.userService.currentUser.subscribe((x) => (this.currentUser = x))
+    this.route.params.subscribe(async ({ postId }) => {
+      if (!postId) {
+        return
       }
-      if (post && this.post && post.id !== this.post.id) {
-        this.inputContent = post.content
-      }
-      this.currentUser = user
-      this.post = post
+      await this.postService.updateSelectedPost(postId)
 
-      if (this.postId !== postId && !isNewPost) {
+      this.zone.run(() => {
         this.postId = postId
-        await this.postService.updateSelectedPost(postId)
+      })
+    })
+    this.postService.selectedPost.subscribe(async (post) => {
+      if (!post) {
+        return
       }
-      if (this.isNewPost !== isNewPost) {
+      const author = await this.userService.getUserById(post.author)
+      this.zone.run(() => {
+        this.selectedAuthor = author
+        this.post = post
+      })
+    })
+    this.route.data.subscribe(({ isNewPost }) => {
+      this.zone.run(() => {
         if (isNewPost) {
           this.editable = true
           this.preview = false
@@ -57,10 +61,8 @@ export class PostComponent {
           this.editable = false
           this.preview = false
         }
-
         this.isNewPost = isNewPost
-      }
-      this.chRef.detectChanges()
+      })
     })
   }
   onEdit(value: boolean) {
@@ -96,9 +98,11 @@ export class PostComponent {
       this.inputTitle = this.post.title
       this.inputDescroption = this.post.description
       this.inputContent = this.post.content
+      this.editable = true
     }
   }
 
+  // return true if valid
   validateSaveButton(): boolean {
     const post = this.post || ({} as IPost)
     const validationData = [
@@ -115,12 +119,15 @@ export class PostComponent {
         prev: post.title,
       },
     ]
+    const emtyValidator = () =>
+      validationData.findIndex((x) => x.new.length === 0) === -1
     if (this.isNewPost) {
-      return validationData.findIndex((x) => x.new.length === 0) === -1
+      return emtyValidator()
     }
     return (
-      validationData.findIndex((x) => x.new.length === 0) === -1 ||
-      validationData.findIndex((x) => x.new === x.prev) !== -1
+      emtyValidator() ||
+      validationData.filter((x) => x.new === x.prev).length !==
+        validationData.length
     )
   }
 
@@ -128,20 +135,47 @@ export class PostComponent {
     if (!this.validateSaveButton()) {
       return
     }
-    const { inputContent, inputDescroption, inputTitle } = this
+    let post: Partial<IPost> = {}
+    const now = Date.now()
 
     if (this.isNewPost) {
-      const newPost: IPost = {
-        author: this.currentUser.id,
-        content: this.inputContent,
-        createdAt: Date.now().toString(),
-        createdBy: 'angular',
-        title: this.inputTitle,
-        description: this.inputDescroption,
-        id: null,
-      }
-      const createdPost = await this.postService.createNewPost(newPost)
-      console.log(createdPost)
+      post.author = this.currentUser.id
+      post.content = this.inputContent
+      post.createdAt = now
+      post.createdBy = 'angular'
+      post.title = this.inputTitle
+      post.description = this.inputDescroption
+      post.id = null
+      post.lastEditAt = now
+
+      post = await this.postService.createNewPost(post as IPost)
+      await this.userService.updateCurrentUser({
+        lastActivity: now,
+      })
+      this.zone.run(() => {
+        this.router.navigate(['/posts', post.id])
+      })
+      return
+    } else {
+      post.content = this.inputContent
+      post.title = this.inputTitle
+      post.description = this.inputDescroption
+      post.lastEditAt = now
+      post.id = this.post.id
+      post.author = this.post.author
+      post = await this.postService.editPost(post)
+      await this.userService.updateCurrentUser({
+        lastActivity: now,
+      })
+      this.zone.run(() => {
+        this.editable = false
+      })
     }
+  }
+  getDate() {
+    return new Date(+this.post.createdAt).toLocaleDateString('en', {
+      day: 'numeric',
+      month: 'short',
+    })
   }
 }

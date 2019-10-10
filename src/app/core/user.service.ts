@@ -4,7 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireStorage } from '@angular/fire/storage'
 import { auth, User, firestore } from 'firebase/app'
 import { GetUsersConfig } from '../core'
-import { IUser, UserUpdateData } from './types'
+import { IUser } from './types'
 import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable({
@@ -47,45 +47,37 @@ export class UserService {
     }
   }
 
-  async updateCurrentUser(value: Partial<UserUpdateData>) {
+  async updateCurrentUser(value: Partial<IUser>) {
     const currentUser = this.forceGetCurrentUser()
-    let newImageUrl: string = null
     if (!currentUser || !currentUser.id) {
       console.log('user not authentificated')
     }
     const { id } = currentUser
     try {
-      console.log(value)
-      const updateData = {
-        ...this._currentUser.value,
-        ...value,
-      }
-
-      if (value.image) {
-        newImageUrl = await this.updateImage(value.image, id)
-        updateData.image = newImageUrl
+      if (value.image && value.image instanceof File) {
+        value.image = await this.updateImage(value.image, id)
       }
 
       await firestore()
         .collection('users')
         .doc(id)
-        .set(updateData)
+        .update(value)
 
-      const newData = await firestore()
-        .collection('users')
-        .doc(id)
-        .get()
+      const updatedUser: IUser = {
+        ...currentUser,
+        ...value,
+      }
 
-      const newUser = newData.data() as IUser
-      this._currentUser.next(newUser)
+      this._currentUser.next(updatedUser)
 
       this._users.next([
         ...this._users.value.filter((x) => x.id !== id),
-        newUser,
+        updatedUser,
       ])
-      return newUser
+      return updatedUser
     } catch (error) {
       console.log(error)
+      return null
     }
   }
 
@@ -101,12 +93,12 @@ export class UserService {
     return await uploaded.ref.getDownloadURL()
   }
 
-  async createNewUser(user: IUser) {
+  async createNewUser(user: Partial<IUser>) {
     await firestore()
       .collection('users')
       .doc(user.id)
       .set(user)
-    this._users.next([...this._users.value, user])
+    this._users.next([...this._users.value, user as IUser])
   }
 
   async getUsers({ lastUserId, take }: GetUsersConfig) {

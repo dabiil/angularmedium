@@ -6,22 +6,18 @@ export interface GetUsersConfig {
 export interface IUser {
   name: string
   id: string
-  image: string
+  image: string | File
   description?: string
-}
-
-export interface UserUpdateData {
-  image: File
-  description: String
-  name: string
+  lastActivity: number
 }
 
 export interface IPost {
   id: string
-  createdAt: string
+  createdAt: number
   createdBy: 'angular' | 'react'
   title: string
   content: string
   author: string
   description: string
+  lastEditAt: number
 }

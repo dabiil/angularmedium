@@ -1,22 +1,38 @@
-<ng-container *ngIf="selectedAuthor && post">
-  <article class="!editable">
-    <ng-container *ngIf="currentUser.id == post.author">
-      <div class="btn btn-success" (click)="editable = true">
-        Edit
+<ng-container *ngIf="selectedAuthor && post && currentUser">
+  <article *ngIf="!editable">
+    <div class="titleContainer">
+      <h1 class="title">
+        {{ post.title }}
+      </h1>
+      <div class="btnContainer">
+        <div
+          class="btn btn-success"
+          (click)="startEditing()"
+          *ngIf="currentUser.id == post.author"
+        >
+          Edit
+        </div>
       </div>
-    </ng-container>
-
-    <h1 class="title">
-      {{ post.title }}
-    </h1>
+    </div>
 
     <h2 class="description">
       {{ post.description }}
     </h2>
-    <a [routerLink]="['users', selectedAuthor.id]" class="author">
-      <img [src]="selectedAuthor.image" [alt]="selectedAuthor.name" />
+    <a [routerLink]="['/users', selectedAuthor.id]" class="userData">
+      <img
+        [src]="selectedAuthor.image"
+        [alt]="selectedAuthor.name"
+        class="rounded-circle author"
+      />
+
+      <div class="dataColumn">
+        <div class="userName">{{ selectedAuthor.name }}</div>
+        <div class="date">{{ getDate() }}</div>
+      </div>
     </a>
-    <markdown [data]="inputContent"> </markdown>
+    <div class="markdownWrapper">
+      <markdown [data]="post.content"> </markdown>
+    </div>
   </article>
 </ng-container>
 <ng-container *ngIf="editable || isNewPost">
@@ -29,7 +45,7 @@
       <button
         class="btn btn-success saveBtn"
         (click)="onSave()"
-        [disabled]="validateSaveButton()"
+        [disabled]="!validateSaveButton()"
       >
         {{ isNewPost ? 'Create' : 'Save' }}
       </button>
@@ -44,6 +60,18 @@
     <h2 class="description">
       {{ inputDescroption || 'Some description' }}
     </h2>
+    <a [routerLink]="['/users', selectedAuthor.id]" class="userData">
+      <img
+        [src]="selectedAuthor.image"
+        [alt]="selectedAuthor.name"
+        class="rounded-circle author"
+      />
+
+      <div class="dataColumn">
+        <div class="userName">{{ selectedAuthor.name }}</div>
+        <div class="date">{{ getDate() }}</div>
+      </div>
+    </a>
     <markdown [data]="inputContent || '**Pls write something**'"> </markdown>
   </div>
   <div class="editableContainer" *ngIf="!preview">
@@ -51,6 +79,7 @@
       <input
         (input)="onInput($event, 'title')"
         placeholder="Entere title"
+        [value]="inputTitle"
         required
       />
     </div>
@@ -58,6 +87,7 @@
       <input
         (input)="onInput($event, 'description')"
         placeholder="Enter description"
+        [value]="inputDescroption"
         required
       />
     </div>

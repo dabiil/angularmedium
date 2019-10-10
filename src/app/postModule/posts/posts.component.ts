@@ -37,7 +37,7 @@ export class PostsComponent implements OnInit {
     ]).subscribe(([user, users]) => {
       this.currentUser = user
       this.users = users
-      this.chRef.detectChanges()
+      this.chRef.markForCheck()
     })
 
     const obs = new IntersectionObserver(

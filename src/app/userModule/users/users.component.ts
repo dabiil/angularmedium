@@ -6,6 +6,7 @@ import {
   Input,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
+  NgZone,
 } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Location, CommonModule } from '@angular/common'
@@ -25,17 +26,20 @@ export class UsersComponent implements OnInit {
   constructor(
     public userService: UserService,
     public authService: AuthService,
-    private chRef: ChangeDetectorRef
+    private chRef: ChangeDetectorRef,
+    private zone: NgZone
   ) {}
 
   ngOnInit() {
-    combineLatest([
-      this.userService.currentUser,
-      this.userService.users,
-    ]).subscribe(([user, users]) => {
-      this.currentUser = user
-      this.users = users
-      this.chRef.detectChanges()
+    this.userService.currentUser.subscribe((x) => {
+      this.zone.run(() => {
+        this.currentUser = x
+      })
+    })
+    this.userService.users.subscribe((x) => {
+      this.zone.run(() => {
+        this.users = x
+      })
     })
 
     const obs = new IntersectionObserver(
@@ -62,5 +66,14 @@ export class UsersComponent implements OnInit {
     return this.currentUser
       ? this.users.filter((x) => x.id !== this.currentUser.id)
       : this.users
+  }
+  getActivity(user: IUser) {
+    if (!user.lastActivity) {
+      return null
+    }
+    return new Date(user.lastActivity).toLocaleDateString('en', {
+      day: 'numeric',
+      month: 'short',
+    })
   }
 }

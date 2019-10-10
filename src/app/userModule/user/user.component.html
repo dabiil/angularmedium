@@ -68,7 +68,7 @@
       </div>
       <div class="flexContainer">
         <p class="card-text">
-          <small class="text-muted">Last updated 3 mins ago </small>
+          <small class="text-muted"> {{ getActivity() }}</small>
         </p>
         <button
           type="button"
@@ -101,19 +101,24 @@
       {{ selectedUser.description }}
     </p>
     <p class="card-text">
-      <small class="text-muted">Last updated 3 mins ago </small>
+      <small class="text-muted"> {{ getActivity() }}</small>
     </p>
   </div>
 </div>
 
 <ng-container *ngIf="selectedUser && posts && posts.length !== 0">
-  <h1 class="header">Posts</h1>
+  <div class="navigation">
+    <h1 class="header">Posts</h1>
+    <a
+      class="btn btn-success"
+      [routerLink]="['/posts/newPost']"
+      role="button"
+      *ngIf="currentUser && selectedUser.id === currentUser.id"
+      >Write new Post</a
+    >
+  </div>
+
   <div class="row">
-    <ng-container *ngIf="currentUser && isCurrentUser">
-      <div class="col-12 buttonContainer">
-        <a class="btn btn-success" href="#" role="button">Write new Post</a>
-      </div>
-    </ng-container>
     <div
       class="col-sm-12 col-md-10 col-lg-6 m-auto post"
       *ngFor="let post of posts; index as postIndex; last as isLastPost"

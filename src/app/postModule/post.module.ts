@@ -26,6 +26,7 @@ const routes: Routes = [
     path: 'posts/newPost',
     component: PostComponent,
     pathMatch: 'full',
+    canActivate: [AuthGuard],
     data: {
       isNewPost: true,
     },
