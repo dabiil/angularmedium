@@ -16,19 +16,17 @@ import { combineLatest } from 'rxjs'
   templateUrl: 'postPreview.component.html',
   styleUrls: ['postPreview.scss'],
 })
-export class PostPreviewComponent implements OnInit {
+export class PostPreviewComponent {
   @Input() post: IPost
-  @Input() author: IUser
   constructor() {}
 
-  ngOnInit(): void {
-    console.log(this.post, this.author)
-    this.getDate()
-  }
   getDate() {
     return new Date(+this.post.createdAt).toLocaleDateString('en', {
       day: 'numeric',
       month: 'short',
     })
+  }
+  get authorSrc() {
+    return (this.post.author as IUser).image
   }
 }

@@ -4,7 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireStorage } from '@angular/fire/storage'
 import { auth, User, firestore } from 'firebase/app'
 import { UserService } from './user.service'
-import { IPost } from './types'
+import { IPost, IUser } from './types'
 import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable({
@@ -23,21 +23,52 @@ export class PostService {
     public storage: AngularFireStorage
   ) {}
 
+  async getAllPostsWithAuthor() {
+    const docs = await firestore()
+      .collection('posts')
+      .get()
+    const posts = docs.docs.map((x) => x.data()) as IPost[]
+
+    const userDocs = await firestore()
+      .collection('users')
+      .get()
+    const users = userDocs.docs.map((x) => x.data()) as IUser[]
+    posts.forEach((x) => {
+      const user = users.find((u) => u.id === x.author)
+      if (user) {
+        x.author = user
+      } else {
+        console.log('wtf, who writed this post')
+      }
+    })
+    this._posts.next(posts)
+  }
   async getPostById(postId: string): Promise<IPost> {
     try {
       const document = await firestore()
         .collection('posts')
         .doc(postId)
         .get()
-      return document.data() as IPost
+      const data = document.data() as IPost
+      console.log(data)
+      data.author = await this.getAuthor(data.author as string)
+      return data
     } catch (error) {
       console.log(error)
       return null
     }
   }
 
+  private async getAuthor(userId: string) {
+    const current = this.userService.forceGetCurrentUser()
+    if (current && userId === current.id) {
+      return current
+    }
+    return await this.userService.getUserById(userId)
+  }
   async updateSelectedPost(postId: string): Promise<IPost> {
     const post = await this.getPostById(postId)
+    console.log(post)
     this._selectedPost.next(post)
     return post
   }
@@ -49,17 +80,18 @@ export class PostService {
         .orderBy('createdAt')
         .where('author', '==', userId)
         .get()
-      console.log(postDocuments)
-      return postDocuments.docs.map((x) => x.data()) as IPost[]
+
+      const posts = postDocuments.docs.map((x) => x.data()) as IPost[]
+      const author = await this.getAuthor(userId)
+      posts.forEach((x) => (x.author = author))
+      return posts
     } catch (error) {
       console.log(error)
       return []
     }
   }
   async updateCurrentUserPosts(userId: string) {
-    const posts = await this.getPostsByUser(userId)
-    this._posts.next(posts)
-    return posts
+    this._posts.next(await this.getPostsByUser(userId))
   }
 
   async editPost(editablePost: Partial<IPost>): Promise<IPost> {
@@ -108,7 +140,7 @@ export class PostService {
       const newPostDoc = firestore()
         .collection('posts')
         .doc()
-      console.log(newPost)
+
       newPost.id = newPostDoc.id
       newPost.author = currentUserId
       await newPostDoc.set(newPost)

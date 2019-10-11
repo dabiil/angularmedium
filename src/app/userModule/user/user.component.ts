@@ -50,15 +50,16 @@ export class UserComponent implements OnInit {
     )
     this.route.params.subscribe(async ({ userId }) => {
       const user = await this.userService.getUserById(userId)
-      const posts = await this.postService.updateCurrentUserPosts(userId)
+      await this.postService.updateCurrentUserPosts(userId)
+
       this.zone.run(() => {
         this.selectedUser = user
-        this.posts = posts
         this.userId = userId
       })
     })
     this.postService.posts.subscribe((x) => {
       this.zone.run(() => {
+        console.log(x)
         this.posts = x
       })
     })
@@ -74,9 +75,7 @@ export class UserComponent implements OnInit {
     ) {
       data.description = this.descriptionInput
     }
-    // if (this.imageBlob) {
-    //   data.image = this.imageBlob
-    // }
+
     const newUser = await this.userService.updateCurrentUser({
       ...data,
       image: this.imageBlob || data.image,

@@ -1,4 +1,4 @@
-<ng-container *ngIf="selectedAuthor && post && currentUser">
+<ng-container *ngIf="post && author">
   <article *ngIf="!editable">
     <div class="titleContainer">
       <h1 class="title">
@@ -8,7 +8,7 @@
         <div
           class="btn btn-success"
           (click)="startEditing()"
-          *ngIf="currentUser.id == post.author"
+          *ngIf="isCurrentUser()"
         >
           Edit
         </div>
@@ -18,15 +18,15 @@
     <h2 class="description">
       {{ post.description }}
     </h2>
-    <a [routerLink]="['/users', selectedAuthor.id]" class="userData">
+    <a [routerLink]="['/users', author.id]" class="userData">
       <img
-        [src]="selectedAuthor.image"
-        [alt]="selectedAuthor.name"
+        [src]="author.image"
+        [alt]="author.name"
         class="rounded-circle author"
       />
 
       <div class="dataColumn">
-        <div class="userName">{{ selectedAuthor.name }}</div>
+        <div class="userName">{{ author.name }}</div>
         <div class="date">{{ getDate() }}</div>
       </div>
     </a>
@@ -60,15 +60,15 @@
     <h2 class="description">
       {{ inputDescroption || 'Some description' }}
     </h2>
-    <a [routerLink]="['/users', selectedAuthor.id]" class="userData">
+    <a [routerLink]="['/users', author.id]" class="userData">
       <img
-        [src]="selectedAuthor.image"
-        [alt]="selectedAuthor.name"
+        [src]="author.image"
+        [alt]="author.name"
         class="rounded-circle author"
       />
 
       <div class="dataColumn">
-        <div class="userName">{{ selectedAuthor.name }}</div>
+        <div class="userName">{{ author.name }}</div>
         <div class="date">{{ getDate() }}</div>
       </div>
     </a>

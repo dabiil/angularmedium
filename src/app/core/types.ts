@@ -24,7 +24,7 @@ export interface IPost {
   createdBy: 'angular' | 'react'
   title: string
   content: string
-  author: string
+  author: string | IUser
   description: string
   lastEditAt: number
 }

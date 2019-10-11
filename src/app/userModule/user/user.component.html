@@ -106,28 +106,25 @@
   </div>
 </div>
 
-<ng-container *ngIf="selectedUser && posts && posts.length !== 0">
+<ng-container *ngIf="selectedUser">
   <div class="navigation">
     <h1 class="header">Posts</h1>
     <a
       class="btn btn-success"
-      [routerLink]="['/posts/newPost']"
+      [routerLink]="['/posts', 'newPost']"
       role="button"
       *ngIf="currentUser && selectedUser.id === currentUser.id"
       >Write new Post</a
     >
   </div>
 
-  <div class="row">
+  <div class="row" *ngIf="posts && posts.length !== 0">
     <div
       class="col-sm-12 col-md-10 col-lg-6 m-auto post"
       *ngFor="let post of posts; index as postIndex; last as isLastPost"
       [ngClass]="{ lastChild: isLastPost && postIndex % 2 == 0 }"
     >
-      <app-post-preview
-        [author]="selectedUser"
-        [post]="post"
-      ></app-post-preview>
+      <app-post-preview [post]="post"></app-post-preview>
     </div>
   </div>
 </ng-container>

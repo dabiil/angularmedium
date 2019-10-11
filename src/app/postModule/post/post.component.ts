@@ -12,7 +12,7 @@ export class PostComponent {
   postId: string = null
   currentUser: IUser = null
   post: IPost = null
-  selectedAuthor: IUser = null
+
   editable = false
   inputContent = ''
   preview = true
@@ -43,9 +43,9 @@ export class PostComponent {
       if (!post) {
         return
       }
-      const author = await this.userService.getUserById(post.author)
+
       this.zone.run(() => {
-        this.selectedAuthor = author
+        console.log(post)
         this.post = post
       })
     })
@@ -177,5 +177,18 @@ export class PostComponent {
       day: 'numeric',
       month: 'short',
     })
+  }
+  isCurrentUser() {
+    if (!this.currentUser) {
+      return false
+    }
+    const id =
+      typeof this.post.author === 'string'
+        ? this.post.author
+        : this.post.author.id
+    return this.currentUser.id === id
+  }
+  get author() {
+    return this.post.author as IUser
   }
 }

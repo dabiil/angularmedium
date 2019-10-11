@@ -24,6 +24,7 @@ import { PostModule } from './postModule/post.module'
     ReactiveFormsModule,
     RouterModule.forRoot(rootRouterConfig, {
       useHash: false,
+      enableTracing: true,
     }),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,

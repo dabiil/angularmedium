@@ -1,15 +1,11 @@
-<ng-container *ngIf="post && author">
+<ng-container *ngIf="post && post.author">
   <div class="col-s6">
     <a [routerLink]="['/posts', post.id]" class="resetA">
       <div class="card mb-4">
         <div class="card-body">
           <div class="row mb-2">
             <div class="col-2">
-              <img
-                [src]="author.image"
-                [alt]="author.name"
-                class="rounded-circle card-img image"
-              />
+              <img [src]="authorSrc" class="rounded-circle card-img image" />
             </div>
             <div class="col-10 align-items-center d-flex">
               <h5 class="card-title mb-0">{{ post.title }}</h5>

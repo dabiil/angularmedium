@@ -14,6 +14,7 @@ export class AuthService {
     const provider = new auth.GoogleAuthProvider()
     provider.addScope('profile')
     provider.addScope('email')
+
     const user = await this.afAuth.auth.signInWithPopup(provider)
 
     if (user.additionalUserInfo.isNewUser) {

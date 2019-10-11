@@ -1,34 +1,28 @@
 <h1 class="header">Posts</h1>
 
 <div class="row">
-  <ng-container
-    *ngFor="let userItem of getUsers; index as userIndex; last as isLastUser"
-  >
-    <div
-      class="col-sm-12 col-md-10 col-lg-6 m-auto userCard"
-      [ngClass]="{ lastChild: isLastUser && userIndex % 2 == 0 }"
-    >
-      <a [routerLink]="['/users', userItem.id]" class="resetA">
+  <ng-container *ngFor="let post of getPosts()">
+    <div class="col-6">
+      <a [routerLink]="['/posts', post.id]" class="resetA">
         <div class="card mb-4">
           <div class="card-body">
             <div class="row mb-2">
               <div class="col-2">
                 <img
-                  [src]="userItem.image"
-                  [alt]="userItem.name"
+                  [src]="getAuthorSrc(post)"
                   class="rounded-circle card-img image"
                 />
               </div>
               <div class="col-10 align-items-center d-flex">
-                <h5 class="card-title mb-0">{{ userItem.name }}</h5>
+                <h5 class="card-title mb-0">{{ post.title }}</h5>
               </div>
             </div>
 
             <p class="card-text">
-              {{ userItem.description }}
+              {{ post.description }}
             </p>
             <p class="card-text">
-              <small class="text-muted">Last updated 3 mins ago </small>
+              <small class="text-muted">{{ getDate(post) }}</small>
             </p>
           </div>
         </div>
@@ -36,4 +30,3 @@
     </div>
   </ng-container>
 </div>
-<div id="UsersIntersectionObserver"></div>
