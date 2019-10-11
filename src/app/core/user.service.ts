@@ -4,7 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireStorage } from '@angular/fire/storage'
 import { auth, User, firestore } from 'firebase/app'
 import { GetUsersConfig } from '../core'
-import { IUser } from './types'
+import { IUser, IUserUpdateProps } from './types'
 import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable({
@@ -47,7 +47,7 @@ export class UserService {
     }
   }
 
-  async updateCurrentUser(value: Partial<IUser>) {
+  async updateCurrentUser(value: IUserUpdateProps) {
     const currentUser = this.forceGetCurrentUser()
     if (!currentUser || !currentUser.id) {
       console.log('user not authentificated')
@@ -63,10 +63,10 @@ export class UserService {
         .doc(id)
         .update(value)
 
-      const updatedUser: IUser = {
+      const updatedUser = {
         ...currentUser,
         ...value,
-      }
+      } as IUser
 
       this._currentUser.next(updatedUser)
 
@@ -90,7 +90,7 @@ export class UserService {
     }
 
     const uploaded = await avatarRef.put(image)
-    return await uploaded.ref.getDownloadURL()
+    return (await uploaded.ref.getDownloadURL()) as string
   }
 
   async createNewUser(user: Partial<IUser>) {

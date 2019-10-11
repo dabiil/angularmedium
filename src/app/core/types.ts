@@ -6,10 +6,17 @@ export interface GetUsersConfig {
 export interface IUser {
   name: string
   id: string
-  image: string | File
+  image: string
   description?: string
   lastActivity: number
 }
+
+export type IUserUpdateProps = Partial<
+  | IUser
+  | {
+      image: File
+    }
+>
 
 export interface IPost {
   id: string

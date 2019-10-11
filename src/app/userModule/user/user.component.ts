@@ -1,6 +1,13 @@
 import { Component, NgZone, ChangeDetectorRef, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { IUser, UserService, AuthService, PostService, IPost } from '../../core'
+import {
+  IUser,
+  UserService,
+  AuthService,
+  PostService,
+  IPost,
+  IUserUpdateProps,
+} from '../../core'
 import { combineLatest } from 'rxjs'
 
 @Component({
@@ -67,10 +74,13 @@ export class UserComponent implements OnInit {
     ) {
       data.description = this.descriptionInput
     }
-    if (this.imageBlob) {
-      data.image = this.imageBlob
-    }
-    const newUser = await this.userService.updateCurrentUser(data)
+    // if (this.imageBlob) {
+    //   data.image = this.imageBlob
+    // }
+    const newUser = await this.userService.updateCurrentUser({
+      ...data,
+      image: this.imageBlob || data.image,
+    } as IUserUpdateProps)
     this.zone.run(() => {
       this.selectedUser = newUser
       this.Editing(false)
